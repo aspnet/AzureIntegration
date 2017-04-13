@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ASP.NET Core integration with Azure AppServices.",
   "packOptions": {
     "repository": {
@@ -13,9 +13,9 @@
     ]
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.1",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.1",
-    "Microsoft.Extensions.Logging.AzureAppServices": "1.0.1"
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.2",
+    "Microsoft.Extensions.Logging.AzureAppServices": "1.0.2"
   },
   "frameworks": {
     "net451": {
