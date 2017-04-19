@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\build\common.props" />
+  <Import Project="..\..\build\hostingstartup.targets" />
 
   <PropertyGroup>
     <Description>ASP.NET Core lightup integration with Application Insights.</Description>
