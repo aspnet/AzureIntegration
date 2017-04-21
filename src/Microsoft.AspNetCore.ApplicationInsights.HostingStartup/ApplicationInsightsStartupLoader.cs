@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
         /// Adds the Javascript <see cref="TagHelperComponent"/> to the <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> associated with the application.</param>
-        protected virtual void InitializeServices(IServiceCollection services)
+        private void InitializeServices(IServiceCollection services)
         {
             services.AddSingleton<ITagHelperComponent, JavaScriptSnippetTagHelperComponent>();
         }
