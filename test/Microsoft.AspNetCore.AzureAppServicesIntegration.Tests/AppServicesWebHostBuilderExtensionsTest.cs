@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
 using Moq;
 using Xunit;
 
@@ -18,7 +17,7 @@ namespace Microsoft.AspNetCore.Hosting.Azure.AppServices.Tests
 
             mock.Object.UseAzureAppServices();
 
-            mock.Verify(builder => builder.ConfigureLogging(It.IsNotNull<Action<ILoggerFactory>>()), Times.Once);
+            mock.Verify(builder => builder.ConfigureLogging(It.IsNotNull<Action<WebHostBuilderContext, ILoggerFactory>>()), Times.Once);
         }
     }
 }

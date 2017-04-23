@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.Hosting
                 throw new ArgumentNullException(nameof(hostBuilder));
             }
 
-            hostBuilder.ConfigureLogging(loggerFactory => loggerFactory.AddAzureWebAppDiagnostics());
+            hostBuilder.ConfigureLogging<ILoggerFactory>((_, loggerFactory) => loggerFactory.AddAzureWebAppDiagnostics());
 
             return hostBuilder;
         }
