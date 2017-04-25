@@ -31,7 +31,6 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
         /// </summary>
         /// <param name="context">The <see cref="TagHelperContext"/> associated with the head tag.</param>
         /// <param name="output">The <see cref="TagHelperOutput"/> of the head tag.</param>
-        /// <returns></returns>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             if (string.Equals(context.TagName, "head", StringComparison.OrdinalIgnoreCase))
