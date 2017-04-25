@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.IntegrationTesting;
 using Microsoft.AspNetCore.Server.IntegrationTesting.xunit;
-using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,21 +20,10 @@ namespace ApplicationInsightsJavaScriptSnippetTest
         {
         }
 
-        [ConditionalTheory]
-        [OSSkipCondition(OperatingSystems.Linux)]
-        [OSSkipCondition(OperatingSystems.MacOSX)]
+        [Theory]
         [InlineData(ApplicationType.Portable)]
         [InlineData(ApplicationType.Standalone)]
-        public async Task OnWindowsOS(ApplicationType applicationType)
-        {
-            await JavaScriptSnippetInjectionTestSuite(applicationType);
-        }
-
-        [ConditionalTheory]
-        [OSSkipCondition(OperatingSystems.Windows)]
-        [InlineData(ApplicationType.Portable)]
-        [InlineData(ApplicationType.Standalone)]
-        public async Task OnNonWindowsOS(ApplicationType applicationType)
+        public async Task ScriptInjected(ApplicationType applicationType)
         {
             await JavaScriptSnippetInjectionTestSuite(applicationType);
         }
