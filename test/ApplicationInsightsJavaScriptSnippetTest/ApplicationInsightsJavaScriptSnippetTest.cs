@@ -26,7 +26,7 @@ namespace ApplicationInsightsJavaScriptSnippetTest
         [OSSkipCondition(OperatingSystems.MacOSX)]
         [InlineData(ApplicationType.Portable)]
         [InlineData(ApplicationType.Standalone)]
-        public async Task ApplicationInsightsJavaScriptSnippetTest_OnWindowsOS(ApplicationType applicationType)
+        public async Task OnWindowsOS(ApplicationType applicationType)
         {
             await JavaScriptSnippetInjectionTestSuite(applicationType);
         }
@@ -35,7 +35,7 @@ namespace ApplicationInsightsJavaScriptSnippetTest
         [OSSkipCondition(OperatingSystems.Windows)]
         [InlineData(ApplicationType.Portable)]
         [InlineData(ApplicationType.Standalone)]
-        public async Task ApplicationInsightsJavaScriptSnippetTest_OnNonWindows(ApplicationType applicationType)
+        public async Task OnNonWindowsOS(ApplicationType applicationType)
         {
             await JavaScriptSnippetInjectionTestSuite(applicationType);
         }
@@ -45,7 +45,7 @@ namespace ApplicationInsightsJavaScriptSnippetTest
             var testName = $"ApplicationInsightsJavaScriptSnippetTest_{applicationType}";
             using (StartLog(out var loggerFactory, testName))
             {
-                var logger = loggerFactory.CreateLogger("ApplicationInsightsJavaScriptSnippetTest");
+                var logger = loggerFactory.CreateLogger(nameof(ApplicationInsightsJavaScriptSnippetTest));
                 var deploymentParameters = new DeploymentParameters(GetApplicationPath(applicationType), ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64)
                 {
                     PublishApplicationBeforeDeployment = true,
@@ -78,8 +78,14 @@ namespace ApplicationInsightsJavaScriptSnippetTest
 
                     var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
 
-                    logger.LogInformation("Verifying home page");
-                    await validator.VerifyScriptCheckPage(response);
+                    logger.LogInformation("Verifying layout page");
+                    await validator.VerifyLayoutPage(response);
+
+                    logger.LogInformation("Verifying layout page before script");
+                    await validator.VerifyLayoutPageBeforeScript(response);
+
+                    logger.LogInformation("Verifying layout page after script");
+                    await validator.VerifyLayoutPageAfterScript(response);
 
                     logger.LogInformation("Variation completed successfully.");
                 }

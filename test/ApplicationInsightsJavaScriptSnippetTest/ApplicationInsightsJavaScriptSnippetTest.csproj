@@ -3,10 +3,22 @@
   <Import Project="..\..\build\common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netcoreapp2.0</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">$(PackageTargetFallback);portable-net40+sl5+win8+wp8+wpa81;portable-net45+win8+wp8+wpa81</PackageTargetFallback>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="AfterScript.html" />
+    <None Remove="BeforeScript.html" />
+    <None Remove="Rendered.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AfterScript.html" />
+    <EmbeddedResource Include="BeforeScript.html" />
+    <EmbeddedResource Include="Rendered.html" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.ApplicationInsights.HostingStartup\Microsoft.AspNetCore.ApplicationInsights.HostingStartup.csproj" />
