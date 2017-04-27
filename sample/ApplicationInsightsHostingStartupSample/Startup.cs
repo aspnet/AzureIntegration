@@ -4,8 +4,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,36 +14,6 @@ using Microsoft.Extensions.Logging;
 
 namespace IISSample
 {
-    public class CurrentResponseTelemetryChannel : ITelemetryChannel
-    {
-        private readonly HttpResponse _response;
-
-        public CurrentResponseTelemetryChannel(HttpResponse response)
-        {
-            _response = response;
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public void Send(ITelemetry item)
-        {
-            if (item is TraceTelemetry traceTelemetry)
-            {
-                _response.WriteAsync(traceTelemetry.Message + Environment.NewLine).GetAwaiter().GetResult();
-            }
-        }
-
-        public void Flush()
-        {
-
-        }
-
-        public bool? DeveloperMode { get; set; }
-        public string EndpointAddress { get; set; }
-    }
-
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
@@ -136,7 +104,6 @@ namespace IISSample
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
-                .AddJsonFile("appsettings.json")
                 .Build();
 
             var host = new WebHostBuilder()
