@@ -22,7 +22,7 @@ namespace IISSample
         {
             if (item is TraceTelemetry traceTelemetry)
             {
-                HttpResponseWritingExtensions.WriteAsync(_response, traceTelemetry.Message + Environment.NewLine).GetAwaiter().GetResult();
+                _response.WriteAsync(traceTelemetry.Message + Environment.NewLine).GetAwaiter().GetResult();
             }
         }
 

@@ -26,8 +26,7 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
         private const string ApplicationInsightsLoggerFactory = "Microsoft.ApplicationInsights.AspNetCore.Logging.ApplicationInsightsLoggerProvider";
         private const string ApplicationInsightsSettingsFile = "ApplicationInsights.settings.json";
 
-        private static readonly KeyValuePair<string, string>[] _defaultLoggingLevels = new KeyValuePair<string, string>[]
-        {
+        private static readonly KeyValuePair<string, string>[] _defaultLoggingLevels = {
             new KeyValuePair<string, string>("Microsoft", "Warning"),
             new KeyValuePair<string, string>("System", "Warning"),
             new KeyValuePair<string, string>("Default", "Information")
@@ -48,7 +47,7 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
         private static void ConfigureLogging(IConfigurationBuilder configurationBuilder)
         {
             // Skip adding default rules when debugger is attached
-            // we want to sent all events to VS
+            // we want to send all events to VS
             if (!Debugger.IsAttached)
             {
                 configurationBuilder.AddInMemoryCollection(GetDefaultLoggingSettings());
