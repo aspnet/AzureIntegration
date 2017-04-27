@@ -21,7 +21,6 @@ namespace Microsoft.AspNetCore.Hosting
             }
 
             hostBuilder.ConfigureLogging(loggerFactory => loggerFactory.AddAzureWebAppDiagnostics());
-
             return hostBuilder;
         }
     }

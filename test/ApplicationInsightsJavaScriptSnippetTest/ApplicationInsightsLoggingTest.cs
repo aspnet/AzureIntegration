@@ -1,22 +1,20 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.IntegrationTesting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ApplicationInsightsJavaScriptSnippetTest
 {
-    public class ApplicationInsightsJavaScriptSnippetTest : ApplicationInsightsFunctionalTest
+    public class ApplicationInsightsLoggingTest : ApplicationInsightsFunctionalTest
     {
-        public ApplicationInsightsJavaScriptSnippetTest(ITestOutputHelper output) : base(output)
+        public ApplicationInsightsLoggingTest(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -25,12 +23,7 @@ namespace ApplicationInsightsJavaScriptSnippetTest
         [InlineData(ApplicationType.Standalone)]
         public async Task ScriptInjected(ApplicationType applicationType)
         {
-            await JavaScriptSnippetInjectionTestSuite(applicationType);
-        }
-
-        private async Task JavaScriptSnippetInjectionTestSuite(ApplicationType applicationType)
-        {
-            var testName = $"ApplicationInsightsJavaScriptSnippetTest_{applicationType}";
+            var testName = $"ApplicationInsightsLoggingTest_{applicationType}";
             using (StartLog(out var loggerFactory, testName))
             {
                 var logger = loggerFactory.CreateLogger(nameof(ApplicationInsightsJavaScriptSnippetTest));
@@ -46,6 +39,9 @@ namespace ApplicationInsightsJavaScriptSnippetTest
                         new KeyValuePair<string, string>(
                             "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
                             "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"),
+                        new KeyValuePair<string, string>(
+                            "HOME",
+                            Path.Combine(GetApplicationPath(), "home")),
                     },
                 };
 
@@ -56,26 +52,42 @@ namespace ApplicationInsightsJavaScriptSnippetTest
                     var httpClient = deploymentResult.CreateHttpClient(httpClientHandler);
 
                     // Request to base address and check if various parts of the body are rendered & measure the cold startup time.
-                    var response = await RetryHelper.RetryRequest(async () =>
-                    {
-                        return await httpClient.GetAsync("\\Home\\ScriptCheck");
-                    }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
+                    var response = await RetryHelper.RetryRequest(
+                        async () => await httpClient.GetAsync("/log"),
+                        logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
 
                     Assert.False(response == null, "Response object is null because the client could not " +
                         "connect to the server after multiple retries");
 
-                    var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
+                    var responseText = await response.Content.ReadAsStringAsync();
 
-                    logger.LogInformation("Verifying layout page");
-                    await validator.VerifyLayoutPage(response);
+                    // Enabled by default
+                    Assert.Contains("System warning log", responseText);
+                    // Disabled by default
+                    Assert.DoesNotContain("System information log", responseText);
+                    // Disabled by default
+                    Assert.DoesNotContain("System trace log", responseText);
 
-                    logger.LogInformation("Verifying layout page before script");
-                    await validator.VerifyLayoutPageBeforeScript(response);
+                    // Enabled by default
+                    Assert.Contains("Microsoft warning log", responseText);
+                    // Disabled by default but overridden by ApplicationInsights.settings.json
+                    Assert.Contains("Microsoft information log", responseText);
+                    // Disabled by default
+                    Assert.DoesNotContain("Microsoft trace log", responseText);
 
-                    logger.LogInformation("Verifying layout page after script");
-                    await validator.VerifyLayoutPageAfterScript(response);
+                    // Enabled by default
+                    Assert.Contains("Custom warning log", responseText);
+                    // Enabled by default
+                    Assert.Contains("Custom information log", responseText);
+                    // Disabled by default
+                    Assert.DoesNotContain("Custom trace log", responseText);
 
-                    logger.LogInformation("Variation completed successfully.");
+                    // Enabled by default
+                    Assert.Contains("Specific warning log", responseText);
+                    // Enabled by default
+                    Assert.Contains("Specific information log", responseText);
+                    // Disabled by default but overridden by ApplicationInsights.settings.json
+                    Assert.Contains("Specific trace log", responseText);
                 }
             }
         }
