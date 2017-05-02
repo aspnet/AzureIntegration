@@ -22,12 +22,28 @@ namespace IISSample
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public void ConfigureJavaScript(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
-            var logger = loggerFactory.CreateLogger("Requests");
-
+            loggerFactory.AddConsole(LogLevel.Debug);
             app.UseMvcWithDefaultRoute();
-            app.Map("/log", logApp => logApp.Run(context =>
+        }
+
+        public void ConfigureDefaultLogging(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        {
+            loggerFactory.AddConsole(LogLevel.Debug);
+            ConfigureLoggingMiddleware(app, loggerFactory);
+        }
+
+        public void ConfigureCustomLogging(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        {
+            loggerFactory.AddConsole(LogLevel.Debug);
+            loggerFactory.AddApplicationInsights(serviceProvider, (s, level) => s.Contains("o"));
+            ConfigureLoggingMiddleware(app, loggerFactory);
+        }
+
+        private static void ConfigureLoggingMiddleware(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            app.Map("/log", logApp => logApp.Run(async context =>
             {
                 TelemetryConfiguration.Active.TelemetryChannel = new CurrentResponseTelemetryChannel(context.Response);
 
@@ -55,50 +71,7 @@ namespace IISSample
 
                 return Task.CompletedTask;
             }));
-            app.Run(async (context) =>
-            {
-                logger.LogDebug("Received request: " + context.Request.Method + " " + context.Request.Path);
-
-                context.Response.ContentType = "text/plain";
-                await context.Response.WriteAsync("Hello World - " + DateTimeOffset.Now + Environment.NewLine);
-                await context.Response.WriteAsync(Environment.NewLine);
-
-                await context.Response.WriteAsync("Address:" + Environment.NewLine);
-                await context.Response.WriteAsync("Scheme: " + context.Request.Scheme + Environment.NewLine);
-                await context.Response.WriteAsync("Host: " + context.Request.Headers["Host"] + Environment.NewLine);
-                await context.Response.WriteAsync("PathBase: " + context.Request.PathBase.Value + Environment.NewLine);
-                await context.Response.WriteAsync("Path: " + context.Request.Path.Value + Environment.NewLine);
-                await context.Response.WriteAsync("Query: " + context.Request.QueryString.Value + Environment.NewLine);
-                await context.Response.WriteAsync(Environment.NewLine);
-
-                await context.Response.WriteAsync("Connection:" + Environment.NewLine);
-                await context.Response.WriteAsync("RemoteIp: " + context.Connection.RemoteIpAddress + Environment.NewLine);
-                await context.Response.WriteAsync("RemotePort: " + context.Connection.RemotePort + Environment.NewLine);
-                await context.Response.WriteAsync("LocalIp: " + context.Connection.LocalIpAddress + Environment.NewLine);
-                await context.Response.WriteAsync("LocalPort: " + context.Connection.LocalPort + Environment.NewLine);
-                await context.Response.WriteAsync("ClientCert: " + context.Connection.ClientCertificate + Environment.NewLine);
-                await context.Response.WriteAsync(Environment.NewLine);
-
-                await context.Response.WriteAsync("User: " + context.User.Identity.Name + Environment.NewLine);
-                await context.Response.WriteAsync(Environment.NewLine);
-
-                await context.Response.WriteAsync("Headers:" + Environment.NewLine);
-                foreach (var header in context.Request.Headers)
-                {
-                    await context.Response.WriteAsync(header.Key + ": " + header.Value + Environment.NewLine);
                 }
-                await context.Response.WriteAsync(Environment.NewLine);
-
-                await context.Response.WriteAsync("Environment Variables:" + Environment.NewLine);
-                var vars = Environment.GetEnvironmentVariables();
-                foreach (var key in vars.Keys.Cast<string>().OrderBy(key => key, StringComparer.OrdinalIgnoreCase))
-                {
-                    var value = vars[key];
-                    await context.Response.WriteAsync(key + ": " + value + Environment.NewLine);
-                }
-                await context.Response.WriteAsync(Environment.NewLine);
-            });
-        }
 
         public static void Main(string[] args)
         {
@@ -117,6 +90,10 @@ namespace IISSample
                 .UseStartup<Startup>()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(config)
+                .ConfigureLogging<LoggerFactory>((context, factory) =>
+                {
+                    factory.UseConfiguration(context.Configuration.GetSection("Logging"));
+                })
                 .Build();
 
             host.Run();

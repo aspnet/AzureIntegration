@@ -20,19 +20,92 @@ namespace ApplicationInsightsJavaScriptSnippetTest
         [Theory]
         [InlineData(ApplicationType.Portable)]
         [InlineData(ApplicationType.Standalone)]
-        public async Task ScriptInjected(ApplicationType applicationType)
+        public async Task DefaultAILogFiltersApplied(ApplicationType applicationType)
         {
+            var responseText = await RunRequest(applicationType, "DefaultLogging");
+            AssertDefaultLogs(responseText);
+        }
+
+        [Theory]
+        [InlineData(ApplicationType.Portable)]
+        [InlineData(ApplicationType.Standalone)]
+        public async Task CustomAILogFiltersApplied(ApplicationType applicationType)
+        {
+            var responseText = await RunRequest(applicationType, "CustomLogging");
+            AssertCustomLogs(responseText);
+        }
+
+        private static void AssertDefaultLogs(string responseText)
+        {
+            // Enabled by default
+            Assert.Contains("System warning log", responseText);
+            // Disabled by default
+            Assert.DoesNotContain("System information log", responseText);
+            // Disabled by default
+            Assert.DoesNotContain("System trace log", responseText);
+
+            // Enabled by default
+            Assert.Contains("Microsoft warning log", responseText);
+            // Disabled by default but overridden by ApplicationInsights.settings.json
+            Assert.Contains("Microsoft information log", responseText);
+            // Disabled by default
+            Assert.DoesNotContain("Microsoft trace log", responseText);
+
+            // Enabled by default
+            Assert.Contains("Custom warning log", responseText);
+            // Enabled by default
+            Assert.Contains("Custom information log", responseText);
+            // Disabled by default
+            Assert.DoesNotContain("Custom trace log", responseText);
+
+            // Enabled by default
+            Assert.Contains("Specific warning log", responseText);
+            // Enabled by default
+            Assert.Contains("Specific information log", responseText);
+            // Disabled by default but overridden by ApplicationInsights.settings.json
+            Assert.Contains("Specific trace log", responseText);
+        }
+
+        private static void AssertCustomLogs(string responseText)
+        {
+            // Custom logger allows only namespaces with 'o' in the name
+
+            Assert.DoesNotContain("System warning log", responseText);
+            Assert.DoesNotContain("System information log", responseText);
+            Assert.DoesNotContain("System trace log", responseText);
+
+            // Enabled by default
+            Assert.Contains("Microsoft warning log", responseText);
+            Assert.Contains("Microsoft information log", responseText);
+            Assert.DoesNotContain("Microsoft trace log", responseText);
+
+            // Enabled by default
+            Assert.Contains("Custom warning log", responseText);
+            Assert.Contains("Custom information log", responseText);
+            Assert.DoesNotContain("Custom trace log", responseText);
+
+            // Enabled by default
+            Assert.DoesNotContain("Specific warning log", responseText);
+            Assert.DoesNotContain("Specific information log", responseText);
+            Assert.DoesNotContain("Specific trace log", responseText);
+        }
+
+        private async Task<string> RunRequest(ApplicationType applicationType, string environment)
+        {
+            string responseText;
             var testName = $"ApplicationInsightsLoggingTest_{applicationType}";
             using (StartLog(out var loggerFactory, testName))
             {
                 var logger = loggerFactory.CreateLogger(nameof(ApplicationInsightsJavaScriptSnippetTest));
-                var deploymentParameters = new DeploymentParameters(GetApplicationPath(), ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64)
+                var deploymentParameters = new DeploymentParameters(GetApplicationPath(), ServerType.Kestrel,
+                    RuntimeFlavor.CoreClr, RuntimeArchitecture.x64)
                 {
                     PublishApplicationBeforeDeployment = true,
                     PreservePublishedApplicationForDebugging = PreservePublishedApplicationForDebugging,
                     TargetFramework = "netcoreapp2.0",
                     Configuration = GetCurrentBuildConfiguration(),
                     ApplicationType = applicationType,
+                    EnvironmentName = environment,
                     EnvironmentVariables =
                     {
                         new KeyValuePair<string, string>(
@@ -56,39 +129,12 @@ namespace ApplicationInsightsJavaScriptSnippetTest
                         logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
 
                     Assert.False(response == null, "Response object is null because the client could not " +
-                        "connect to the server after multiple retries");
+                                                   "connect to the server after multiple retries");
 
-                    var responseText = await response.Content.ReadAsStringAsync();
-
-                    // Enabled by default
-                    Assert.Contains("System warning log", responseText);
-                    // Disabled by default
-                    Assert.DoesNotContain("System information log", responseText);
-                    // Disabled by default
-                    Assert.DoesNotContain("System trace log", responseText);
-
-                    // Enabled by default
-                    Assert.Contains("Microsoft warning log", responseText);
-                    // Disabled by default but overridden by ApplicationInsights.settings.json
-                    Assert.Contains("Microsoft information log", responseText);
-                    // Disabled by default
-                    Assert.DoesNotContain("Microsoft trace log", responseText);
-
-                    // Enabled by default
-                    Assert.Contains("Custom warning log", responseText);
-                    // Enabled by default
-                    Assert.Contains("Custom information log", responseText);
-                    // Disabled by default
-                    Assert.DoesNotContain("Custom trace log", responseText);
-
-                    // Enabled by default
-                    Assert.Contains("Specific warning log", responseText);
-                    // Enabled by default
-                    Assert.Contains("Specific information log", responseText);
-                    // Disabled by default but overridden by ApplicationInsights.settings.json
-                    Assert.Contains("Specific trace log", responseText);
+                    responseText = await response.Content.ReadAsStringAsync();
                 }
             }
+            return responseText;
         }
     }
 }

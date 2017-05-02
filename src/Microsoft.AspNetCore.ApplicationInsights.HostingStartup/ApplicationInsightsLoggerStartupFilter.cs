@@ -11,15 +11,14 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
 {
     internal class ApplicationInsightsLoggerStartupFilter : IStartupFilter
     {
-        private readonly Func<string, LogLevel, bool> _noFilter = (s, level) => true;
-
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return builder =>
             {
                 var loggerFactory = builder.ApplicationServices.GetService<ILoggerFactory>();
                 // We need to disable filtering on logger, filtering would be done by LoggerFactory
-                loggerFactory.AddApplicationInsights(builder.ApplicationServices, _noFilter);
+                var loggerEnabled = true;
+                loggerFactory.AddApplicationInsights(builder.ApplicationServices, (s, level) => loggerEnabled, () => loggerEnabled = false);
                 next(builder);
             };
         }
