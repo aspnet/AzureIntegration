@@ -43,7 +43,7 @@ namespace IISSample
 
         private static void ConfigureLoggingMiddleware(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            app.Map("/log", logApp => logApp.Run(async context =>
+            app.Map("/log", logApp => logApp.Run(context =>
             {
                 var oldChannel = TelemetryConfiguration.Active.TelemetryChannel;
                 TelemetryConfiguration.Active.TelemetryChannel = new CurrentResponseTelemetryChannel(context.Response);
@@ -72,7 +72,7 @@ namespace IISSample
 
                 return Task.CompletedTask;
             }));
-                }
+        }
 
         public static void Main(string[] args)
         {
@@ -84,20 +84,16 @@ namespace IISSample
             var host = new WebHostBuilder()
                 .ConfigureLogging((hostingContext, factory) =>
                 {
-                    factory.UseConfiguration(hostingContext.Configuration.GetSection("Logging"))
-                           .AddConsole();
+                    if (config["WIRE_LOGGING_CONFIGURATION"]?.ToLowerInvariant() != "false")
+                    {
+                        factory.UseConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    }
+                    factory.AddConsole();
                 })
                 .UseKestrel()
                 .UseStartup<Startup>()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(config)
-                .ConfigureLogging<LoggerFactory>((context, factory) =>
-                {
-                    if (config["WIRE_LOGGING_CONFIGURATION"]?.ToLowerInvariant() != "false")
-                    {
-                    factory.UseConfiguration(context.Configuration.GetSection("Logging"));
-                    }
-                })
                 .Build();
 
             host.Run();
