@@ -45,6 +45,7 @@ namespace IISSample
         {
             app.Map("/log", logApp => logApp.Run(async context =>
             {
+                var oldChannel = TelemetryConfiguration.Active.TelemetryChannel;
                 TelemetryConfiguration.Active.TelemetryChannel = new CurrentResponseTelemetryChannel(context.Response);
 
                 var systemLogger = loggerFactory.CreateLogger("System.Namespace");
@@ -67,7 +68,7 @@ namespace IISSample
                 specificLogger.LogInformation("Specific information log");
                 specificLogger.LogWarning("Specific warning log");
 
-                TelemetryConfiguration.Active.TelemetryChannel = null;
+                TelemetryConfiguration.Active.TelemetryChannel = oldChannel;
 
                 return Task.CompletedTask;
             }));
@@ -92,7 +93,10 @@ namespace IISSample
                 .UseConfiguration(config)
                 .ConfigureLogging<LoggerFactory>((context, factory) =>
                 {
+                    if (config["WIRE_LOGGING_CONFIGURATION"]?.ToLowerInvariant() != "false")
+                    {
                     factory.UseConfiguration(context.Configuration.GetSection("Logging"));
+                    }
                 })
                 .Build();
 
