@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
             foreach (var pair in _defaultLoggingLevels)
             {
                 // Default is null
-                if (pair.Key == null || name.StartsWith((string) pair.Key))
+                if (pair.Key == null || name.StartsWith(pair.Key))
                 {
                     return level >= pair.Value;
                 }
