@@ -22,12 +22,12 @@ namespace IISSample
             services.AddMvc();
         }
 
-        public void ConfigureJavaScript(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public void ConfigureJavaScript(IApplicationBuilder app)
         {
             app.UseMvcWithDefaultRoute();
         }
 
-        public void ConfigureDefaultLogging(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+        public void ConfigureDefaultLogging(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             ConfigureLoggingMiddleware(app, loggerFactory);
         }
