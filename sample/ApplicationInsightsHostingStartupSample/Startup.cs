@@ -24,19 +24,16 @@ namespace IISSample
 
         public void ConfigureJavaScript(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
             app.UseMvcWithDefaultRoute();
         }
 
         public void ConfigureDefaultLogging(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
             ConfigureLoggingMiddleware(app, loggerFactory);
         }
 
         public void ConfigureCustomLogging(IApplicationBuilder app, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
             loggerFactory.AddApplicationInsights(serviceProvider, (s, level) => s.Contains("o"));
             ConfigureLoggingMiddleware(app, loggerFactory);
         }
@@ -84,7 +81,7 @@ namespace IISSample
             var host = new WebHostBuilder()
                 .ConfigureLogging((hostingContext, factory) =>
                 {
-                    if (config["WIRE_LOGGING_CONFIGURATION"]?.ToLowerInvariant() != "false")
+                    if (hostingContext.Configuration["WIRE_LOGGING_CONFIGURATION"]?.ToLowerInvariant() != "false")
                     {
                         factory.UseConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     }

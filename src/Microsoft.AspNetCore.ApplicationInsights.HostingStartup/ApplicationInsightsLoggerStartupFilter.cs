@@ -24,7 +24,8 @@ namespace Microsoft.AspNetCore.ApplicationInsights.HostingStartup
                 if (loggerFactory is LoggerFactory stronglyTypedLoggerFactory &&
                     ApplicationInsightsLoggerConfiguration.HasLoggingConfigured(stronglyTypedLoggerFactory.Configuration))
                 {
-                    // We detected that logger settings got to LoggerFactory confi
+                    // We detected that logger settings got to LoggerFactory configuration and
+                    // defaults would be applied
                     loggerFactory.AddApplicationInsights(
                         builder.ApplicationServices,
                         (s, level) => loggerEnabled,
