@@ -77,18 +77,8 @@ namespace IISSample
             var host = new WebHostBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    var env = hostingContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-
-                    config.AddEnvironmentVariables();
-
-                    if (args != null)
-                    {
-                        config.AddCommandLine(args);
-                    }
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                    config.AddCommandLine(args);
                 })
                 .ConfigureLogging((hostingContext, builder) =>
                 {
