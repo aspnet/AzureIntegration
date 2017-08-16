@@ -31,7 +31,7 @@
 
  <Target Name="PackTaskDependencies" BeforeTargets="GenerateNuspec">
     <ItemGroup>
-      <_PackageFiles >
+      <_PackageFiles Include="$(DotnetHomeDirectory)\**\*.*" Exclude="$(DotnetHomeDirectory)\**\nuGetPackagesArchive.lzma" Condition="$(DotnetHomeDirectory) != ''">
         <PackagePath>content\</PackagePath>
         <Visible>false</Visible>
         <BuildAction>Content</BuildAction>
