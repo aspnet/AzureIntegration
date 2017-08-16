@@ -1,5 +1,9 @@
 <Project>
    <ItemGroup>
      <ExcludeFromPack Include="$(RepositoryRoot)src\Microsoft.AspNetCore.AzureAppServices.TestBundle\Microsoft.AspNetCore.AzureAppServices.TestBundle.csproj" />
+     <ExcludeFromTest
+      Condition="'$(AntaresTestsOnly)' != ''"
+      Include="$(RepositoryRoot)test\*\*.csproj"
+      Exclude="$(RepositoryRoot)test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests\Microsoft.AspNetCore.AzureAppServices.FunctionalTests.csproj" />
    </ItemGroup>
  </Project>
