@@ -1,5 +1,4 @@
 <Project>
-  <Import Project="common.props" />
 
   <PropertyGroup>
       <SiteExtensionProjectDirectory>$(RepositoryRoot)src\Microsoft.AspNetCore.AzureAppServices.TestBundle\</SiteExtensionProjectDirectory>
