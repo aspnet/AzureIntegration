@@ -30,4 +30,5 @@ project.lock.json
 .testPublish/
 global.json
 korebuild-lock.txt
+msbuild.binlog
 .dotnet

@@ -3,7 +3,7 @@
   <Import Project="..\..\build\common.props" />
 
   <PropertyGroup>
-    <title>ASP.NET Core Test Bundle Extensions</title>
+    <Title>ASP.NET Core Test Bundle Extensions</Title>
     <Description>This extension enables testing functionality of ASP.NET Core on Azure WebSites.</Description>
     <TargetFramework>net461</TargetFramework>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Content Include="applicationHost.xdt" />
-    <Content Include="bin\$(Configuration)\$(TargetFramework)\Microsoft.Web.Xdt.Extensions.dll" PackagePath="content" />
+    <Content Include="$(OutputPath)\Microsoft.Web.Xdt.Extensions.dll" PackagePath="content" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +31,7 @@
 
  <Target Name="PackTaskDependencies" BeforeTargets="GenerateNuspec">
     <ItemGroup>
-      <_PackageFiles Include="$(DotnetHomeDirectory)\**\*.*" Exclude="$(DotnetHomeDirectory)\**\nuGetPackagesArchive.lzma" Condition="$(DotnetHomeDirectory) != ''">
+      <_PackageFiles >
         <PackagePath>content\</PackagePath>
         <Visible>false</Visible>
         <BuildAction>Content</BuildAction>
