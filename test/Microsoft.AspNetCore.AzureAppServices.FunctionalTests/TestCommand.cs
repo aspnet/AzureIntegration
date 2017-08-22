@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             var current = new DirectoryInfo(Directory.GetCurrentDirectory());
             while (current != null)
             {
-                var dotnetSubdir = new DirectoryInfo(Path.Combine(current.FullName, ".dotnet"));
+                var dotnetSubdir = new DirectoryInfo(Path.Combine(current.FullName, ".test-dotnet"));
                 if (dotnetSubdir.Exists)
                 {
                     var dotnetName = Path.Combine(dotnetSubdir.FullName, "dotnet.exe");

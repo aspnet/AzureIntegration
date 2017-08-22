@@ -10,7 +10,7 @@
   <Target Name="BuildSiteExtension">
 
     <PropertyGroup>
-      <SiteExtensionWorkingDirectory>$(RepositoryRoot).dotnet\</SiteExtensionWorkingDirectory>
+      <SiteExtensionWorkingDirectory>$(RepositoryRoot).test-dotnet\</SiteExtensionWorkingDirectory>
       <CliVersionRelativePath>build\dotnet.version</CliVersionRelativePath>
     </PropertyGroup>
 
