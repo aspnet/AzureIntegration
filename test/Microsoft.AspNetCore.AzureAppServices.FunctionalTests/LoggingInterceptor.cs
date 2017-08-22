@@ -1,3 +1,6 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -17,22 +20,22 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         public void Information(string message)
         {
-            LoggerExtensions.LogInformation(_logger, message);
+            _logger.LogInformation(message);
         }
 
         public void TraceError(string invocationId, Exception exception)
         {
-            LoggerExtensions.LogInformation(_logger, exception, "Exception in {invocationId}", invocationId);
+            _logger.LogInformation(exception, "Exception in {invocationId}", invocationId);
         }
 
         public void ReceiveResponse(string invocationId, HttpResponseMessage response)
         {
-            LoggerExtensions.LogInformation(_logger, response.AsFormattedString());
+            _logger.LogInformation(response.AsFormattedString());
         }
 
         public void SendRequest(string invocationId, HttpRequestMessage request)
         {
-            LoggerExtensions.LogInformation(_logger, request.AsFormattedString());
+            _logger.LogInformation(request.AsFormattedString());
         }
 
         public void Configuration(string source, string name, string value) { }

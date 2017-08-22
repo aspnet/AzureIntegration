@@ -39,9 +39,9 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             ServiceClientTracing.IsEnabled = true;
             ServiceClientTracing.AddTracingInterceptor(new LoggingInterceptor(globalLoggerFactory.CreateLogger(nameof(ServiceClientTracing))));
 
-            var clientId = GetRequiredEnvironemtnVariable("AZURE_AUTH_CLIENT_ID");
-            var clientSecret = GetRequiredEnvironemtnVariable("AZURE_AUTH_CLIENT_SECRET");
-            var tenant = GetRequiredEnvironemtnVariable("AZURE_AUTH_TENANT");
+            var clientId = GetRequiredEnvironmentVariable("AZURE_AUTH_CLIENT_ID");
+            var clientSecret = GetRequiredEnvironmentVariable("AZURE_AUTH_CLIENT_SECRET");
+            var tenant = GetRequiredEnvironmentVariable("AZURE_AUTH_TENANT");
 
             var credentials = SdkContext.AzureCredentialsFactory.FromServicePrincipal(clientId, clientSecret, tenant, AzureEnvironment.AzureGlobalCloud);
             Azure = Microsoft.Azure.Management.Fluent.Azure.Configure()
@@ -68,7 +68,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 .Create();
         }
 
-        private static string GetRequiredEnvironemtnVariable(string name)
+        private static string GetRequiredEnvironmentVariable(string name)
         {
             var authFile = Environment.GetEnvironmentVariable(name);
             if (string.IsNullOrEmpty(authFile))
@@ -81,7 +81,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         public IAppServicePlan Plan { get; set; }
 
-        public IStorageAccount DeploymentStorrageAccount { get; set; }
+        public IStorageAccount DeploymentStorageAccount { get; set; }
 
         public AssemblyTestLog TestLog { get; set; }
 
@@ -115,7 +115,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             var deployment = await Azure.Deployments.Define(GetTimestampedName("Deployment"))
                 .WithExistingResourceGroup(ResourceGroup)
                 .WithTemplate(readAllText)
-                .WithParameters(ToParametrsObject(parameters))
+                .WithParameters(ToParametersObject(parameters))
                 .WithMode(DeploymentMode.Incremental)
                 .CreateAsync();
 
@@ -132,7 +132,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             return await Azure.AppServices.WebApps.GetByIdAsync(siteId);
         }
 
-        private JObject ToParametrsObject(Dictionary<string, string> parameters)
+        private JObject ToParametersObject(Dictionary<string, string> parameters)
         {
             return new JObject(
                 parameters.Select(parameter =>

@@ -1,3 +1,6 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -41,10 +44,10 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 await site.UploadFilesAsync(publishDir, "", await site.GetPublishingProfileAsync(), logger);
 
                 var httpClient = site.CreateClient();
-                var getresult = await httpClient.GetAsync("/");
-                getresult.EnsureSuccessStatusCode();
+                var getResult = await httpClient.GetAsync("/");
+                getResult.EnsureSuccessStatusCode();
 
-                Assert.Equal("Hello World!", await getresult.Content.ReadAsStringAsync());
+                Assert.Equal("Hello World!", await getResult.Content.ReadAsStringAsync());
             }
         }
 
