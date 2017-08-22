@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
@@ -109,7 +109,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 }
             };
 
-            var completionTask = CurrentProcess.StartAndWaitForExitAsync();
+            var completionTask = StartAndWaitForExitAsync(CurrentProcess);
 
             CurrentProcess.BeginOutputReadLine();
 
@@ -127,8 +127,15 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             var stdErrString = String.Join(System.Environment.NewLine, stdErr);
 
 
-            Logger.LogInformation("stdout: {out}", stdOutString);
-            Logger.LogInformation("stderr: {err}", stdErrString);
+            if (!string.IsNullOrWhiteSpace(stdOutString))
+            {
+                Logger.LogInformation("stdout: {out}", stdOutString);
+            }
+
+            if (!string.IsNullOrWhiteSpace(stdErrString))
+            {
+                Logger.LogInformation("stderr: {err}", stdErrString);
+            }
 
             return new CommandResult(
                 CurrentProcess.StartInfo,
@@ -223,6 +230,21 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             {
                 psi.WorkingDirectory = WorkingDirectory;
             }
+        }
+        public static Task StartAndWaitForExitAsync(Process subject)
+        {
+            var taskCompletionSource = new TaskCompletionSource<object>();
+
+            subject.EnableRaisingEvents = true;
+
+            subject.Exited += (s, a) =>
+            {
+                taskCompletionSource.SetResult(null);
+            };
+
+            subject.Start();
+
+            return taskCompletionSource.Task;
         }
     }
 }
