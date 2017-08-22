@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             {
                 Assert.NotNull(_fixture.Azure);
 
-                var site = await _fixture.Deploy("Templates\\appInsights.json", null);
+                var site = await _fixture.Deploy("Templates\\BasicAppServices.json", null);
                 var testDirectory = GetTestDirectory();
                 var publishDir = testDirectory.CreateSubdirectory("publish");
 
