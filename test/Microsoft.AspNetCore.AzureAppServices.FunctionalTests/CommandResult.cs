@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 {
@@ -27,7 +26,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         public void AssertSuccess()
         {
-            Assert.True(0 == ExitCode, StdOut + Environment.NewLine + StdErr);
+            Assert.True(0 == ExitCode, StdOut + Environment.NewLine + StdErr + Environment.NewLine);
         }
     }
 }

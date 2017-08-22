@@ -1,7 +1,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.AzureAppServices.FunctionalTests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,9 +38,9 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 var publishResult = await dotnet.ExecuteAsync($"publish -o \"{publishDir.FullName}\"");
                 publishResult.AssertSuccess();
 
-                await WebAppExtensions.UploadFilesAsync(site, publishDir, "", await site.GetPublishingProfileAsync(), logger);
+                await site.UploadFilesAsync(publishDir, "", await site.GetPublishingProfileAsync(), logger);
 
-                var httpClient = WebAppExtensions.CreateClient(site);
+                var httpClient = site.CreateClient();
                 var getresult = await httpClient.GetAsync("/");
                 getresult.EnsureSuccessStatusCode();
 

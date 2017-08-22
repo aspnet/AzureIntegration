@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,8 +23,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 {
     public class AzureFixture : IDisposable
     {
-        private readonly ILogger<AzureFixture> _logger;
-
         public string Timestamp { get; set; }
 
         public AzureFixture()
@@ -33,7 +34,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 (ILoggerFactory) TestLog.GetType().GetField("_globalLoggerFactory", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(TestLog);
 
-            _logger = globalLoggerFactory.CreateLogger<AzureFixture>();
+            var logger = globalLoggerFactory.CreateLogger<AzureFixture>();
 
             ServiceClientTracing.IsEnabled = true;
             ServiceClientTracing.AddTracingInterceptor(new LoggingInterceptor(globalLoggerFactory.CreateLogger(nameof(ServiceClientTracing))));
@@ -49,16 +50,16 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 .WithDefaultSubscription();
 
             Timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
-            TestRunName = GetTimestampedName("FunctionalTests");
+            var testRunName = GetTimestampedName("FunctionalTests");
 
-            _logger.LogInformation("Creating resource group {TestRunName}", TestRunName);
+            logger.LogInformation("Creating resource group {TestRunName}", testRunName);
             ResourceGroup = Azure.ResourceGroups
-                .Define(TestRunName)
+                .Define(testRunName)
                 .WithRegion(Region.USWest2)
                 .Create();
 
             var servicePlanName = GetTimestampedName("TestPlan");
-            _logger.LogInformation("Creating service plan {servicePlanName}", TestRunName);
+            logger.LogInformation("Creating service plan {servicePlanName}", testRunName);
 
             Plan = Azure.AppServices.AppServicePlans.Define(servicePlanName)
                 .WithRegion(Region.USWest2)
@@ -88,7 +89,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         public IResourceGroup ResourceGroup { get; set; }
 
-        public string TestRunName { get; set; }
         public IAzure Azure { get; set; }
 
         public string GetTimestampedName(string name)
@@ -150,6 +150,5 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 Azure.ResourceGroups.DeleteByName(ResourceGroup.Name);
             }
         }
-
     }
 }
