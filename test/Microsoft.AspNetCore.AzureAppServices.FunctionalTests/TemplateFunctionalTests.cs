@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Azure.Management.AppService.Fluent;
@@ -44,11 +45,12 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 result = await dotnet.ExecuteAsync("publish /p:PublishProfile=Profile");
                 result.AssertSuccess();
 
-                var httpClient = site.CreateClient();
-                var getResult = await httpClient.GetAsync("/");
-                getResult.EnsureSuccessStatusCode();
-
-                Assert.Equal("Hello World!", await getResult.Content.ReadAsStringAsync());
+                using (var httpClient = site.CreateClient())
+                {
+                    var getResult = await httpClient.GetAsync("/");
+                    getResult.EnsureSuccessStatusCode();
+                    Assert.Equal("Hello World!", await getResult.Content.ReadAsStringAsync());
+                }
             }
         }
 
@@ -57,7 +59,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             _fixture.TestLog.StartTestLog(_outputHelper, nameof(TemplateFunctionalTests), out var factory, callerName);
             return new TestLogger(factory, factory.CreateLogger(callerName));
         }
-
 
         private TestCommand DotNet(TestLogger logger, DirectoryInfo workingDirectory)
         {

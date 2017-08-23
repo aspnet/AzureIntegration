@@ -126,7 +126,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             var stdOutString = String.Join(System.Environment.NewLine, stdOut);
             var stdErrString = String.Join(System.Environment.NewLine, stdErr);
 
-
             if (!string.IsNullOrWhiteSpace(stdOutString))
             {
                 Logger.LogInformation("stdout: {out}", stdOutString);
