@@ -23,12 +23,22 @@
   <ItemGroup>
     <Content Include="applicationHost.xdt" />
     <Content Include="$(OutputPath)\Microsoft.Web.Xdt.Extensions.dll" PackagePath="content" />
-    <Content Include="$(DotnetHomeDirectory)\**\*.*" Exclude="$(DotnetHomeDirectory)\**\nuGetPackagesArchive.lzma" Condition="$(DotnetHomeDirectory) != ''" PackagePath="content\%(RecursiveDir)%(FileName)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Web.Xdt.Extensions\Microsoft.Web.Xdt.Extensions.csproj" PrivateAssets="All" />
   </ItemGroup>
+
+ <Target Name="PackTaskDependencies" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_PackageFiles Include="$(DotnetHomeDirectory)\**\*.*" Exclude="$(DotnetHomeDirectory)\**\nuGetPackagesArchive.lzma" Condition="$(DotnetHomeDirectory) != ''">
+        <PackagePath>content\</PackagePath>
+        <Visible>false</Visible>
+        <BuildAction>Content</BuildAction>
+      </_PackageFiles>
+    </ItemGroup>
+
+  </Target>
 
 </Project>
 
