@@ -4,6 +4,8 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -42,6 +44,10 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 publishResult.AssertSuccess();
 
                 await site.UploadFilesAsync(publishDir, "", await site.GetPublishingProfileAsync(), logger);
+
+                await site.BuildPublishProfileAsync(testDirectory.FullName);
+
+                await dotnet.ExecuteAsync("msbuild /t:Publish /p:PublishProfile:Profile");
 
                 var httpClient = site.CreateClient();
                 var getResult = await httpClient.GetAsync("/");

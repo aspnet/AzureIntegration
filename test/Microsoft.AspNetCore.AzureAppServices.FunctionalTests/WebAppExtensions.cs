@@ -6,8 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
@@ -46,6 +49,35 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                         }
                     }
                     await request.GetResponseAsync();
+                }
+            }
+        }
+
+        public static async Task BuildPublishProfileAsync(this IWebApp site, string projectDirectory)
+        {
+            var result = await site.Manager.WebApps.Inner.ListPublishingProfileXmlWithSecretsAsync(
+                site.ResourceGroupName,
+                site.Name,
+                new CsmPublishingProfileOptionsInner());
+
+            var targetDirectory = Path.Combine(projectDirectory, "Properties", "PublishProfiles");
+            Directory.CreateDirectory(targetDirectory);
+
+            var publishSettings = XDocument.Load(result);
+            foreach (var profile in publishSettings.Root.Elements("publishProfile"))
+            {
+                if ((string) profile.Attribute("publishMethod") == "MSDeploy")
+                {
+                    new XDocument("Project",
+                        new XElement("PropertyGroup",
+                            new XElement("WebPublishMethod", "MSDeploy"),
+                            new XElement("PublishProvider", "AzureWebSite"),
+                            new XElement("UserName", (string)profile.Attribute("userName")),
+                            new XElement("Password", (string)profile.Attribute("userPWD")),
+                            new XElement("MSDeployServiceURL", (string)profile.Attribute("publishUrl")),
+                            new XElement("DeployIisAppPath", (string)profile.Attribute("msdeploySite"))
+                        ))
+                        .Save(Path.Combine(targetDirectory, "Profile.pubxml"));
                 }
             }
         }
