@@ -24,35 +24,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             return new HttpClient { BaseAddress = new Uri("http://" + domain) };
         }
 
-        public static async Task UploadFilesAsync(this IWebApp site, DirectoryInfo from, string to, IPublishingProfile publishingProfile, ILogger logger)
-        {
-            foreach (var info in from.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                if (info is FileInfo file)
-                {
-                    var address = new Uri(
-                        "ftp://" + publishingProfile.FtpUrl + to + file.FullName.Substring(from.FullName.Length).Replace('\\', '/'));
-                    logger.LogInformation($"Uploading {file.FullName} to {address}");
-
-                    var request = (FtpWebRequest)WebRequest.Create(address);
-                    request.Method = WebRequestMethods.Ftp.UploadFile;
-                    request.KeepAlive = true;
-                    request.UseBinary = true;
-                    request.UsePassive = false;
-                    request.Credentials = new NetworkCredential(publishingProfile.FtpUsername, publishingProfile.FtpPassword);
-                    request.ConnectionGroupName = "group";
-                    using (var fileStream = File.OpenRead(file.FullName))
-                    {
-                        using (var requestStream = await request.GetRequestStreamAsync())
-                        {
-                            await fileStream.CopyToAsync(requestStream);
-                        }
-                    }
-                    await request.GetResponseAsync();
-                }
-            }
-        }
-
         public static async Task BuildPublishProfileAsync(this IWebApp site, string projectDirectory)
         {
             var result = await site.Manager.WebApps.Inner.ListPublishingProfileXmlWithSecretsAsync(
@@ -68,15 +39,16 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             {
                 if ((string) profile.Attribute("publishMethod") == "MSDeploy")
                 {
-                    new XDocument("Project",
-                        new XElement("PropertyGroup",
-                            new XElement("WebPublishMethod", "MSDeploy"),
-                            new XElement("PublishProvider", "AzureWebSite"),
-                            new XElement("UserName", (string)profile.Attribute("userName")),
-                            new XElement("Password", (string)profile.Attribute("userPWD")),
-                            new XElement("MSDeployServiceURL", (string)profile.Attribute("publishUrl")),
-                            new XElement("DeployIisAppPath", (string)profile.Attribute("msdeploySite"))
-                        ))
+                    new XDocument(
+                        new XElement("Project",
+                            new XElement("PropertyGroup",
+                                new XElement("WebPublishMethod", "MSDeploy"),
+                                new XElement("PublishProvider", "AzureWebSite"),
+                                new XElement("UserName", (string)profile.Attribute("userName")),
+                                new XElement("Password", (string)profile.Attribute("userPWD")),
+                                new XElement("MSDeployServiceURL", (string)profile.Attribute("publishUrl")),
+                                new XElement("DeployIisAppPath", (string)profile.Attribute("msdeploySite"))
+                            )))
                         .Save(Path.Combine(targetDirectory, "Profile.pubxml"));
                 }
             }

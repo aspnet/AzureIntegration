@@ -33,21 +33,16 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
                 var site = await _fixture.Deploy("Templates\\BasicAppServices.json", null);
                 var testDirectory = GetTestDirectory();
-                var publishDir = testDirectory.CreateSubdirectory("publish");
 
                 var dotnet = DotNet(logger, testDirectory);
 
                 var result = await dotnet.ExecuteAsync("new web");
                 result.AssertSuccess();
 
-                var publishResult = await dotnet.ExecuteAsync($"publish -o \"{publishDir.FullName}\"");
-                publishResult.AssertSuccess();
-
-                await site.UploadFilesAsync(publishDir, "", await site.GetPublishingProfileAsync(), logger);
-
                 await site.BuildPublishProfileAsync(testDirectory.FullName);
 
-                await dotnet.ExecuteAsync("msbuild /t:Publish /p:PublishProfile:Profile");
+                result = await dotnet.ExecuteAsync("publish /p:PublishProfile=Profile");
+                result.AssertSuccess();
 
                 var httpClient = site.CreateClient();
                 var getResult = await httpClient.GetAsync("/");
