@@ -9,6 +9,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageTags>aspnet;logging;aspnetcore;AzureSiteExtension</PackageTags>
     <PackageType>AzureSiteExtension</PackageType>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
     <IncludeSource>false</IncludeSource>
