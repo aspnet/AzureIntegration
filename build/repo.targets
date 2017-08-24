@@ -32,7 +32,7 @@
       Packages="@(RepositoryNupkgs)"
       Feed="$(SiteExtensionFeed)"
       ApiKey="$(APIKey)"
-      TimeoutSeconds="6000"/>
+      TimeoutSeconds="600"/>
 
   </Target>
 
