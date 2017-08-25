@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(SiteExtensionWorkingDirectory)" />
+    <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
   </ItemGroup>
 
-  <Target Name="BuildSiteExtension">
+  <Target Name="BuildSiteExtension" DependsOnTargets="InstallDotNet">
 
     <PropertyGroup>
       <CliVersionRelativePath>build\dotnet.version</CliVersionRelativePath>
@@ -20,7 +20,7 @@
 
     <MSBuild Projects="$(SiteExtensionProjectDirectory)Microsoft.AspNetCore.AzureAppServices.TestBundle.csproj"
       Targets="Restore;Pack"
-      Properties="DotnetHomeDirectory=$(SiteExtensionWorkingDirectory)" />
+      Properties="DotnetHomeDirectory=$(SiteExtensionWorkingDirectory);BuildNumber=$(BuildNumber)" />
 
   </Target>
 
