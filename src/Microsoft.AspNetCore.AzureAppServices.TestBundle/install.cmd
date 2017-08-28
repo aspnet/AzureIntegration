@@ -1,0 +1,1 @@
+robocopy "D:\Program Files (x86)\dotnet" "." /E /XC /XN /XO
