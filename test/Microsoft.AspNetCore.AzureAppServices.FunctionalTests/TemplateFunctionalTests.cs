@@ -162,21 +162,21 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             return new TestLogger(factory, factory.CreateLogger(callerName));
         }
 
-        private TestCommand DotNet(TestLogger logger, DirectoryInfo workingDirectory, string sufix)
+        private TestCommand DotNet(TestLogger logger, DirectoryInfo workingDirectory, string suffix)
         {
-            return new TestCommand(GetDotNetPath(sufix))
+            return new TestCommand(GetDotNetPath(suffix))
             {
                 Logger = logger,
                 WorkingDirectory = workingDirectory.FullName
             };
         }
 
-        private static string GetDotNetPath(string sufix)
+        private static string GetDotNetPath(string suffix)
         {
             var current = new DirectoryInfo(Directory.GetCurrentDirectory());
             while (current != null)
             {
-                var dotnetSubdir = new DirectoryInfo(Path.Combine(current.FullName, ".test-dotnet", sufix));
+                var dotnetSubdir = new DirectoryInfo(Path.Combine(current.FullName, ".test-dotnet", suffix));
                 if (dotnetSubdir.Exists)
                 {
                     var dotnetName = Path.Combine(dotnetSubdir.FullName, "dotnet.exe");
