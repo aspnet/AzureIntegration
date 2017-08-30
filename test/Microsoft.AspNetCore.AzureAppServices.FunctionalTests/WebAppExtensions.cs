@@ -66,6 +66,23 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             return request;
         }
 
+        public static async Task GitDeploy(this IWebApp site, DirectoryInfo workingDirectory, ILogger logger)
+        {
+            var git = new TestCommand("git")
+            {
+                Logger = logger,
+                WorkingDirectory = workingDirectory.FullName
+            };
+
+            var publishingProfile = await site.GetPublishingProfileAsync();
+
+            await git.ExecuteAndAssertAsync("init");
+            await git.ExecuteAndAssertAsync($"remote add origin https://{publishingProfile.GitUsername}:{publishingProfile.GitPassword}@{publishingProfile.GitUrl}");
+            await git.ExecuteAndAssertAsync("add .");
+            await git.ExecuteAndAssertAsync("commit -am Initial");
+            await git.ExecuteAndAssertAsync("push origin master");
+        }
+
         public static async Task BuildPublishProfileAsync(this IWebApp site, string projectDirectory)
         {
             var result = await site.Manager.WebApps.Inner.ListPublishingProfileXmlWithSecretsAsync(
