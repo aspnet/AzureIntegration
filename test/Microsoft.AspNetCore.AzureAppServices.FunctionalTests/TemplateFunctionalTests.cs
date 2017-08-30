@@ -55,7 +55,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
                 var testDirectory = GetTestDirectory(testId);
 
-                var publishDirectory = testDirectory.CreateSubdirectory("publish");
                 var dotnet = DotNet(logger, testDirectory, "1.1");
 
                 await dotnet.ExecuteAndAssertAsync("new " + template);
@@ -64,11 +63,14 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
                 InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
 
-                await dotnet.ExecuteAndAssertAsync("restore -s https://api.nuget.org/v3/index.json");
+                var pp = await site.GetPublishingProfileAsync();
 
-                await dotnet.ExecuteAndAssertAsync("publish -o " + publishDirectory.FullName);
-
-                await site.UploadFilesAsync(publishDirectory, "/", await site.GetPublishingProfileAsync(), logger);
+                var git = Git(logger, testDirectory);
+                await git.ExecuteAndAssertAsync("init");
+                await git.ExecuteAndAssertAsync($"remote add origin https://{pp.GitUsername}:{pp.GitPassword}@{pp.GitUrl}");
+                await git.ExecuteAndAssertAsync("add .");
+                await git.ExecuteAndAssertAsync("commit -am Initial");
+                await git.ExecuteAndAssertAsync("push origin master");
 
                 using (var httpClient = site.CreateClient())
                 {
@@ -80,43 +82,39 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     getResult.EnsureSuccessStatusCode();
 
                     var runtimeInfo = JsonConvert.DeserializeObject<RuntimeInfo>(await getResult.Content.ReadAsStringAsync());
-
-                    ValidateLegacyRuntimeInfo(runtimeInfo, publishDirectory, expectedRuntime, dotnet.Command);
+                    ValidateLegacyRuntimeInfo(runtimeInfo, expectedRuntime, dotnet.Command);
                 }
             }
         }
 
-        private void ValidateLegacyRuntimeInfo(RuntimeInfo runtimeInfo, DirectoryInfo publishPath, string expectedRuntime, string dotnetPath)
+        private void ValidateLegacyRuntimeInfo(RuntimeInfo runtimeInfo, string expectedRuntime, string dotnetPath)
         {
             var cacheAssemblies = new HashSet<string>(File.ReadAllLines("DotNetCache.txt"), StringComparer.InvariantCultureIgnoreCase);
-            var appModules = PathUtilities.GetAllModules(publishPath);
-            var runtimeModules = PathUtilities.GetLatestSharedRuntimeAssemblies(dotnetPath, out var runtimeVersion);
+            var runtimeModules = PathUtilities.GetLatestSharedRuntimeAssemblies(dotnetPath, out _);
 
             foreach (var runtimeInfoModule in runtimeInfo.Modules)
             {
-                //// Check if assembly that is in the cache is loaded from it
-                //if (cacheAssemblies.Contains(Path.GetFileNameWithoutExtension(runtimeInfoModule.ModuleName)))
-                //{
-                //    Assert.Contains($"D:\\DotNetCache\\x86\\", runtimeInfoModule.FileName);
-                //}
-                //else
-                //{
-                //    var appModule = appModules.SingleOrDefault(f => runtimeInfoModule.ModuleName.Equals(f, StringComparison.InvariantCultureIgnoreCase));
-                //    if (appModule != null)
-                //    {
-                //        Assert.Contains($"wwwroot\\{appModule}", runtimeInfoModule.FileName);
-                //    }
-                //}
+                // Skip native
+                if (runtimeInfoModule.Version == null)
+                {
+                    continue;
+                }
 
                 // Verify that modules that we expect to come from runtime actually come from there
-                // Native modules would prefer to be loaded from windows folder, skip them
-                // hostfxr is ignore because while it shipped in shared runime folder for older runtimes it's correctly loaded from hostfxr directory
-                if (runtimeModules.Any(rutimeModule => runtimeInfoModule.ModuleName.Equals(rutimeModule, StringComparison.InvariantCultureIgnoreCase)) &&
-                    runtimeInfoModule.FileName.IndexOf("windows\\system32", StringComparison.InvariantCultureIgnoreCase) == -1 &&
-                    runtimeInfoModule.FileName.IndexOf("hostfxr", StringComparison.InvariantCultureIgnoreCase) == -1)
+                if (runtimeModules.Any(rutimeModule => runtimeInfoModule.ModuleName.Equals(rutimeModule, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     Assert.Contains($"shared\\Microsoft.NETCore.App\\{expectedRuntime}", runtimeInfoModule.FileName);
+                    continue;
                 }
+
+                // Check if assembly that is in the cache is loaded from it
+                if (cacheAssemblies.Contains(Path.GetFileNameWithoutExtension(runtimeInfoModule.ModuleName)))
+                {
+                    Assert.Contains("D:\\DotNetCache\\x86\\", runtimeInfoModule.FileName);
+                    continue;
+                }
+
+                Assert.Contains("wwwroot\\", runtimeInfoModule.FileName);
             }
         }
 
@@ -277,6 +275,15 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         private TestCommand DotNet(TestLogger logger, DirectoryInfo workingDirectory, string suffix)
         {
             return new TestCommand(GetDotNetPath(suffix))
+            {
+                Logger = logger,
+                WorkingDirectory = workingDirectory.FullName
+            };
+        }
+
+        private TestCommand Git(TestLogger logger, DirectoryInfo workingDirectory)
+        {
+            return new TestCommand("git")
             {
                 Logger = logger,
                 WorkingDirectory = workingDirectory.FullName

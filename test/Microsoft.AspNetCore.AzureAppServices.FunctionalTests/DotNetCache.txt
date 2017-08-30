@@ -35,7 +35,7 @@ Microsoft.AspNetCore.Http.Features
 Microsoft.AspNetCore.HttpOverrides
 Microsoft.AspNetCore.Identity
 Microsoft.AspNetCore.Identity.EntityFrameworkCore
-Microsoft.AspNetCore.JsonPatch
+//Microsoft.AspNetCore.JsonPatch - hash error on 1.0
 Microsoft.AspNetCore.Localization
 microsoft.aspnetcore.localization.routing
 Microsoft.AspNetCore.MiddlewareAnalysis
@@ -123,7 +123,7 @@ Microsoft.Extensions.Logging.TraceSource
 Microsoft.Extensions.ObjectPool
 Microsoft.Extensions.Options
 Microsoft.Extensions.Options.ConfigurationExtensions
-Microsoft.Extensions.PlatformAbstractions
+//Microsoft.Extensions.PlatformAbstractions - hash error on 1.0
 Microsoft.Extensions.Primitives
 Microsoft.Extensions.WebEncoders
 microsoft.identitymodel.logging
@@ -133,4 +133,23 @@ microsoft.identitymodel.tokens
 microsoft.net.http
 Microsoft.Net.Http.Headers
 Microsoft.Net.Http.Server
-Microsoft.Net.WebSockets.Server
+Microsoft.Net.WebSockets.Servern
+newtonsoft.json
+remotion.linq
+//system.collections.nongeneric - hash error on 1.0
+system.collections.specialized
+system.componentmodel.primitives
+system.componentmodel.typeconverter
+system.data.common
+system.data.sqlclient
+//system.diagnostics.contracts - hash error on 1.0
+system.diagnostics.tracesource
+system.identitymodel.tokens.jwt
+system.interactive.async
+system.io.pipes
+system.net.websockets
+system.private.datacontractserialization
+//system.runtime.serialization.primitives - hash error on 1.0
+system.runtime.serialization.xml
+system.text.encodings.web
+system.xml.xmlserializer
