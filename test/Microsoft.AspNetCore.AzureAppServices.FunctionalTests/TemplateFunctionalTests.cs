@@ -34,12 +34,13 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         }
 
         [Theory]
-        [InlineData("1.0", "web", "Learn how to build ASP.NET apps that can run anywhere", "-t")]
-        [InlineData("1.1", "web", "Hello World!")]
-        [InlineData("1.1", "mvc", "Learn how to build ASP.NET apps that can run anywhere!")]
-        public async Task LegacyTemplateRuns(string dotnetVersion, string template, string expected, string newArgument = "")
+        [InlineData("1.0.5", "web", "Hello World!")]
+        [InlineData("1.0.5", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        [InlineData("1.1.2", "web", "Hello World!")]
+        [InlineData("1.1.2", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        public async Task LegacyTemplateRuns(string expectedRuntime, string template, string expected)
         {
-            var testId = nameof(LegacyTemplateRuns) + template + dotnetVersion.Replace(".", string.Empty);
+            var testId = nameof(LegacyTemplateRuns) + template + expectedRuntime.Replace(".", string.Empty);
 
             using (var logger = GetLogger(testId))
             {
@@ -55,11 +56,15 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 var testDirectory = GetTestDirectory(testId);
 
                 var publishDirectory = testDirectory.CreateSubdirectory("publish");
-                var dotnet = DotNet(logger, testDirectory, dotnetVersion);
+                var dotnet = DotNet(logger, testDirectory, "1.1");
 
-                await dotnet.ExecuteAndAssertAsync("new " + newArgument + " " + template);
+                await dotnet.ExecuteAndAssertAsync("new " + template);
 
-                await dotnet.ExecuteAndAssertAsync("restore");
+                UpdateCSProj(testDirectory, $"Templates\\Legacy.{expectedRuntime}.{template}.csproj");
+
+                InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
+
+                await dotnet.ExecuteAndAssertAsync("restore -s https://api.nuget.org/v3/index.json");
 
                 await dotnet.ExecuteAndAssertAsync("publish -o " + publishDirectory.FullName);
 
@@ -70,6 +75,47 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     var getResult = await httpClient.GetAsync("/");
                     getResult.EnsureSuccessStatusCode();
                     Assert.Contains(expected, await getResult.Content.ReadAsStringAsync());
+
+                    getResult = await httpClient.GetAsync("/runtimeInfo");
+                    getResult.EnsureSuccessStatusCode();
+
+                    var runtimeInfo = JsonConvert.DeserializeObject<RuntimeInfo>(await getResult.Content.ReadAsStringAsync());
+
+                    ValidateLegacyRuntimeInfo(runtimeInfo, publishDirectory, expectedRuntime, dotnet.Command);
+                }
+            }
+        }
+
+        private void ValidateLegacyRuntimeInfo(RuntimeInfo runtimeInfo, DirectoryInfo publishPath, string expectedRuntime, string dotnetPath)
+        {
+            var cacheAssemblies = new HashSet<string>(File.ReadAllLines("DotNetCache.txt"), StringComparer.InvariantCultureIgnoreCase);
+            var appModules = PathUtilities.GetAllModules(publishPath);
+            var runtimeModules = PathUtilities.GetLatestSharedRuntimeAssemblies(dotnetPath, out var runtimeVersion);
+
+            foreach (var runtimeInfoModule in runtimeInfo.Modules)
+            {
+                //// Check if assembly that is in the cache is loaded from it
+                //if (cacheAssemblies.Contains(Path.GetFileNameWithoutExtension(runtimeInfoModule.ModuleName)))
+                //{
+                //    Assert.Contains($"D:\\DotNetCache\\x86\\", runtimeInfoModule.FileName);
+                //}
+                //else
+                //{
+                //    var appModule = appModules.SingleOrDefault(f => runtimeInfoModule.ModuleName.Equals(f, StringComparison.InvariantCultureIgnoreCase));
+                //    if (appModule != null)
+                //    {
+                //        Assert.Contains($"wwwroot\\{appModule}", runtimeInfoModule.FileName);
+                //    }
+                //}
+
+                // Verify that modules that we expect to come from runtime actually come from there
+                // Native modules would prefer to be loaded from windows folder, skip them
+                // hostfxr is ignore because while it shipped in shared runime folder for older runtimes it's correctly loaded from hostfxr directory
+                if (runtimeModules.Any(rutimeModule => runtimeInfoModule.ModuleName.Equals(rutimeModule, StringComparison.InvariantCultureIgnoreCase)) &&
+                    runtimeInfoModule.FileName.IndexOf("windows\\system32", StringComparison.InvariantCultureIgnoreCase) == -1 &&
+                    runtimeInfoModule.FileName.IndexOf("hostfxr", StringComparison.InvariantCultureIgnoreCase) == -1)
+                {
+                    Assert.Contains($"shared\\Microsoft.NETCore.App\\{expectedRuntime}", runtimeInfoModule.FileName);
                 }
             }
         }
@@ -119,15 +165,15 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     getResult.EnsureSuccessStatusCode();
 
                     var runtimeInfo = JsonConvert.DeserializeObject<RuntimeInfo>(await getResult.Content.ReadAsStringAsync());
-                    ValidateRuntimeInfo(runtimeInfo, dotnet.Command);
+                    ValidateStoreRuntimeInfo(runtimeInfo, dotnet.Command);
                 }
             }
         }
 
-        private void ValidateRuntimeInfo(RuntimeInfo runtimeInfo, string dotnetPath)
+        private void ValidateStoreRuntimeInfo(RuntimeInfo runtimeInfo, string dotnetPath)
         {
             var storeModules = PathUtilities.GetStoreModules(dotnetPath);
-            var runtimeModules = PathUtilities.GetSharedRuntimeAssemblies(dotnetPath, out var runtimeVersion);
+            var runtimeModules = PathUtilities.GetLatestSharedRuntimeAssemblies(dotnetPath, out var runtimeVersion);
 
             foreach (var runtimeInfoModule in runtimeInfo.Modules)
             {
@@ -160,6 +206,15 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     Assert.Contains($"shared\\Microsoft.NETCore.App\\{runtimeVersion}", runtimeInfoModule.FileName);
                 }
             }
+        }
+
+        private static void UpdateCSProj(DirectoryInfo projectRoot, string fileName)
+        {
+            var csproj = projectRoot.GetFiles("*.csproj").Single().FullName;
+
+            // Copy implementation file to project directory
+            var implementationFile = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            File.Copy(implementationFile, csproj, true);
         }
 
         private static void InjectMiddlware(DirectoryInfo projectRoot, string typeName, string fileName)
