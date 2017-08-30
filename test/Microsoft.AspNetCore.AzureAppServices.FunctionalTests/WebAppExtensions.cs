@@ -26,21 +26,16 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         public static async Task UploadFilesAsync(this IWebApp site, DirectoryInfo from, string to, IPublishingProfile publishingProfile, ILogger logger)
         {
-            foreach (var info in from.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            foreach (var info in from.GetFileSystemInfos("*"))
             {
+                var address = new Uri(
+                    "ftp://" + publishingProfile.FtpUrl + to + info.FullName.Substring(from.FullName.Length + 1).Replace('\\', '/'));
+
                 if (info is FileInfo file)
                 {
-                    var address = new Uri(
-                        "ftp://" + publishingProfile.FtpUrl + to + file.FullName.Substring(from.FullName.Length).Replace('\\', '/'));
                     logger.LogInformation($"Uploading {file.FullName} to {address}");
 
-                    var request = (FtpWebRequest)WebRequest.Create(address);
-                    request.Method = WebRequestMethods.Ftp.UploadFile;
-                    request.KeepAlive = true;
-                    request.UseBinary = true;
-                    request.UsePassive = false;
-                    request.Credentials = new NetworkCredential(publishingProfile.FtpUsername, publishingProfile.FtpPassword);
-                    request.ConnectionGroupName = "group";
+                    var request = CreateRequest(publishingProfile, address, WebRequestMethods.Ftp.UploadFile);
                     using (var fileStream = File.OpenRead(file.FullName))
                     {
                         using (var requestStream = await request.GetRequestStreamAsync())
@@ -50,7 +45,25 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     }
                     await request.GetResponseAsync();
                 }
+                if (info is DirectoryInfo directory)
+                {
+                    var request = CreateRequest(publishingProfile, address, WebRequestMethods.Ftp.MakeDirectory);
+                    await request.GetResponseAsync();
+                    await UploadFilesAsync(site, directory, to + directory.Name + '/', publishingProfile, logger);
+                }
             }
+        }
+
+        private static FtpWebRequest CreateRequest(IPublishingProfile publishingProfile, Uri address, string method)
+        {
+            var request = (FtpWebRequest) WebRequest.Create(address);
+            request.Method = method;
+            request.KeepAlive = true;
+            request.UseBinary = true;
+            request.UsePassive = false;
+            request.Credentials = new NetworkCredential(publishingProfile.FtpUsername, publishingProfile.FtpPassword);
+            request.ConnectionGroupName = "group";
+            return request;
         }
 
         public static async Task BuildPublishProfileAsync(this IWebApp site, string projectDirectory)

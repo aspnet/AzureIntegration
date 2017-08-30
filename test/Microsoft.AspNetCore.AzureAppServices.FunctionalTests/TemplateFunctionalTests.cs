@@ -34,6 +34,47 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         }
 
         [Theory]
+        [InlineData("1.0", "web", "Learn how to build ASP.NET apps that can run anywhere", "-t")]
+        [InlineData("1.1", "web", "Hello World!")]
+        [InlineData("1.1", "mvc", "Learn how to build ASP.NET apps that can run anywhere!")]
+        public async Task LegacyTemplateRuns(string dotnetVersion, string template, string expected, string newArgument = "")
+        {
+            var testId = nameof(LegacyTemplateRuns) + template + dotnetVersion.Replace(".", string.Empty);
+
+            using (var logger = GetLogger(testId))
+            {
+                var site = await _fixture.Deploy("Templates\\AppServicesWithSiteExtensions.json",
+                    baseName: testId,
+                    additionalArguments: new Dictionary<string, string>
+                    {
+                        { "extensionFeed", AzureFixture.GetRequiredEnvironmentVariable("SiteExtensionFeed") },
+                        { "extensionName", "AspNetCoreTestBundle" },
+                        { "extensionVersion", GetAssemblyInformationalVersion() },
+                    });
+
+                var testDirectory = GetTestDirectory(testId);
+
+                var publishDirectory = testDirectory.CreateSubdirectory("publish");
+                var dotnet = DotNet(logger, testDirectory, dotnetVersion);
+
+                await dotnet.ExecuteAndAssertAsync("new " + newArgument + " " + template);
+
+                await dotnet.ExecuteAndAssertAsync("restore");
+
+                await dotnet.ExecuteAndAssertAsync("publish -o " + publishDirectory.FullName);
+
+                await site.UploadFilesAsync(publishDirectory, "/", await site.GetPublishingProfileAsync(), logger);
+
+                using (var httpClient = site.CreateClient())
+                {
+                    var getResult = await httpClient.GetAsync("/");
+                    getResult.EnsureSuccessStatusCode();
+                    Assert.Contains(expected, await getResult.Content.ReadAsStringAsync());
+                }
+            }
+        }
+
+        [Theory]
         [InlineData("2.0", "web", "Hello World!")]
         [InlineData("2.0", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
         [InlineData("2.0", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
@@ -213,7 +254,11 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         {
             if (Directory.Exists(callerName))
             {
-                Directory.Delete(callerName, recursive:true);
+                try
+                {
+                    Directory.Delete(callerName, recursive: true);
+                }
+                catch { }
             }
             return Directory.CreateDirectory(callerName);
         }
