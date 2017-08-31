@@ -29,8 +29,7 @@
       "location": "West US 2",
       "properties": {
         "serverFarmId": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Web/serverFarms', parameters('hostingPlanName'))]"
-      }
-      ,
+      },
       "resources": [
         {
           "type": "siteextensions",

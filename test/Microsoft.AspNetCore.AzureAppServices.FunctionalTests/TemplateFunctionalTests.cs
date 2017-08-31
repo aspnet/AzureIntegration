@@ -143,6 +143,13 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
                 await dotnet.ExecuteAndAssertAsync("new " + template);
 
+                // We don't ship offline cache in site extension so we need to provider a feed to
+                // restore from when doing kudu git deploy for version not published to Nuget
+                if (deploymentKind == WebAppDeploymentKind.Git && dotnetVersion == "latest")
+                {
+                    CopyToProjectDirectory(testDirectory, Asset("Nuget.latest.config"), "NuGet.config");
+                }
+
                 InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
                 FixAspNetCoreVersion(testDirectory, dotnet.Command);
 
@@ -229,6 +236,13 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             // Copy implementation file to project directory
             var implementationFile = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             File.Copy(implementationFile, csproj, true);
+        }
+
+        private static void CopyToProjectDirectory(DirectoryInfo projectRoot, string fileName, string desinationFileName = null)
+        {
+            // Copy implementation file to project directory
+            var implementationFile = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            File.Copy(implementationFile, Path.Combine(projectRoot.FullName, desinationFileName ?? Path.GetFileName(fileName)), true);
         }
 
         private static void InjectMiddlware(DirectoryInfo projectRoot, string typeName, string fileName)

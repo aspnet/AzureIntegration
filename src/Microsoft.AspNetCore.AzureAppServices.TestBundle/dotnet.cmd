@@ -1,1 +1,1 @@
-D:\home\site\siteextensions\AspNetCoreTestBundle\dotnet.exe %*
+D:\home\SiteExtensions\AspNetCoreTestBundle\dotnet.exe %*
