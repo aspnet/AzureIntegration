@@ -36,17 +36,21 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         }
 
         [Theory]
-        [InlineData("1.0.5", "web", "Hello World!")]
-        [InlineData("1.0.5", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
-        [InlineData("1.1.2", "web", "Hello World!")]
-        [InlineData("1.1.2", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
-        public async Task LegacyTemplateRuns(string expectedRuntime, string template, string expected)
+        [InlineData(WebAppDeploymentKind.Git, "1.0.5", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Git, "1.0.5", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        [InlineData(WebAppDeploymentKind.Git, "1.1.2", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Git, "1.1.2", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        [InlineData(WebAppDeploymentKind.Ftp, "1.0.5", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Ftp, "1.0.5", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        [InlineData(WebAppDeploymentKind.Ftp, "1.1.2", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Ftp, "1.1.2", "mvc", "Learn how to build ASP.NET apps that can run anywhere")]
+        public async Task LegacyTemplateRuns(WebAppDeploymentKind deploymentKind, string expectedRuntime, string template, string expected)
         {
-            var testId =  ToFriendlyName(nameof(LegacyTemplateRuns), template, expectedRuntime);
+            var testId =  ToFriendlyName(nameof(LegacyTemplateRuns), deploymentKind, template, expectedRuntime);
 
             using (var logger = GetLogger(testId))
             {
-                var site = await _fixture.Deploy(AppServicesWithSiteExtensionsTemplate, GetSiteExtensionArguments(), testId);
+                var siteTask = _fixture.Deploy(AppServicesWithSiteExtensionsTemplate, GetSiteExtensionArguments(), testId);
 
                 var testDirectory = GetTestDirectory(testId);
 
@@ -58,7 +62,8 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
                 InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
 
-                await site.GitDeploy(testDirectory, logger);
+                var site = await siteTask;
+                await site.Deploy(deploymentKind, testDirectory, dotnet, logger);
 
                 using (var httpClient = site.CreateClient())
                 {
@@ -79,6 +84,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
         {
             var cacheAssemblies = new HashSet<string>(File.ReadAllLines(Asset($"DotNetCache.{expectedRuntime}.txt")), StringComparer.InvariantCultureIgnoreCase);
             var runtimeModules = PathUtilities.GetLatestSharedRuntimeAssemblies(dotnetPath, out _);
+            var modulesNotInCache = new List<string>();
 
             foreach (var runtimeInfoModule in runtimeInfo.Modules)
             {
@@ -98,28 +104,39 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 // Check if assembly that is in the cache is loaded from it
                 if (cacheAssemblies.Contains(Path.GetFileNameWithoutExtension(runtimeInfoModule.ModuleName)))
                 {
-                    Assert.Contains("D:\\DotNetCache\\x86\\", runtimeInfoModule.FileName);
+                    if (runtimeInfoModule.FileName.IndexOf("D:\\DotNetCache\\x86\\", StringComparison.CurrentCultureIgnoreCase) == -1)
+                    {
+                        modulesNotInCache.Add(runtimeInfoModule.FileName);
+                    }
                     continue;
                 }
 
                 Assert.Contains("wwwroot\\", runtimeInfoModule.FileName);
             }
+
+            Assert.Empty(modulesNotInCache);
         }
 
         [Theory]
-        [InlineData("2.0", "web", "Hello World!")]
-        [InlineData("2.0", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
-        [InlineData("2.0", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
-        [InlineData("latest", "web", "Hello World!")]
-        [InlineData("latest", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
-        [InlineData("latest", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
-        public async Task TemplateRuns(string dotnetVersion, string template, string expected)
+        [InlineData(WebAppDeploymentKind.Git, "2.0", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Git, "2.0", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.Git, "2.0", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.Git, "latest", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.Git, "latest", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.Git, "latest", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "2.0", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "2.0", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "2.0", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "latest", "web", "Hello World!")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "latest", "razor", "Learn how to build ASP.NET apps that can run anywhere.")]
+        [InlineData(WebAppDeploymentKind.WebDeploy, "latest", "mvc", "Learn how to build ASP.NET apps that can run anywhere.")]
+        public async Task TemplateRuns(WebAppDeploymentKind deploymentKind, string dotnetVersion, string template, string expected)
         {
-            var testId = ToFriendlyName(nameof(TemplateRuns), template, dotnetVersion);
+            var testId = ToFriendlyName(nameof(TemplateRuns), deploymentKind, template, dotnetVersion);
 
             using (var logger = GetLogger(testId))
             {
-                var site = await _fixture.Deploy(AppServicesWithSiteExtensionsTemplate, GetSiteExtensionArguments(), testId);
+                var siteTask = _fixture.Deploy(AppServicesWithSiteExtensionsTemplate, GetSiteExtensionArguments(), testId);
 
                 var testDirectory = GetTestDirectory(testId);
                 var dotnet = DotNet(logger, testDirectory, dotnetVersion);
@@ -127,12 +144,10 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 await dotnet.ExecuteAndAssertAsync("new " + template);
 
                 InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
-
                 FixAspNetCoreVersion(testDirectory, dotnet.Command);
 
-                await site.BuildPublishProfileAsync(testDirectory.FullName);
-
-                await dotnet.ExecuteAndAssertAsync("publish /p:PublishProfile=Profile");
+                var site = await siteTask;
+                await site.Deploy(deploymentKind, testDirectory, dotnet, logger);
 
                 using (var httpClient = site.CreateClient())
                 {
@@ -194,7 +209,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         private string ToFriendlyName(params object[] parts)
         {
-            return new string(string.Join(string.Empty, parts).Where(c => !char.IsLetterOrDigit(c)).ToArray());
+            return new string(string.Join(string.Empty, parts).Where(char.IsLetterOrDigit).ToArray());
         }
 
         private static Dictionary<string, string> GetSiteExtensionArguments()

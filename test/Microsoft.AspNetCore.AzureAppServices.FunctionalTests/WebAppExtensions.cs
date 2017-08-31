@@ -6,12 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 {
@@ -66,6 +66,29 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             return request;
         }
 
+
+        public static async Task Deploy(this IWebApp site, WebAppDeploymentKind kind, DirectoryInfo from, TestCommand dotnet, ILogger logger)
+        {
+            switch (kind)
+            {
+                case WebAppDeploymentKind.Git:
+                    await site.GitDeploy(from, logger);
+                    break;
+                case WebAppDeploymentKind.WebDeploy:
+                    await site.BuildPublishProfileAsync(from.FullName);
+                    await dotnet.ExecuteAndAssertAsync("publish /p:PublishProfile=Profile");
+                    break;
+                case WebAppDeploymentKind.Ftp:
+                    var publishDirectory = from.CreateSubdirectory("publish");
+                    await dotnet.ExecuteAndAssertAsync("restore");
+                    await dotnet.ExecuteAndAssertAsync("publish -o " + publishDirectory.FullName);
+                    await site.UploadFilesAsync(publishDirectory, "/", await site.GetPublishingProfileAsync(), logger);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+            }
+        }
+
         public static async Task GitDeploy(this IWebApp site, DirectoryInfo workingDirectory, ILogger logger)
         {
             var git = new TestCommand("git")
@@ -80,7 +103,9 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             await git.ExecuteAndAssertAsync($"remote add origin https://{publishingProfile.GitUsername}:{publishingProfile.GitPassword}@{publishingProfile.GitUrl}");
             await git.ExecuteAndAssertAsync("add .");
             await git.ExecuteAndAssertAsync("commit -am Initial");
-            await git.ExecuteAndAssertAsync("push origin master");
+            var result = await git.ExecuteAndAssertAsync("push origin master");
+
+            Assert.DoesNotContain("An error has occurred during web site deployment", result.StdErr);
         }
 
         public static async Task BuildPublishProfileAsync(this IWebApp site, string projectDirectory)
