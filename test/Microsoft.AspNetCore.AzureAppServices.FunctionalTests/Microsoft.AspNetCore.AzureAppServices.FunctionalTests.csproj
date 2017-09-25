@@ -1,15 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFramework>net461</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="Assets\*.*" CopyToOutputDirectory="PreserveNewest" />
-    <ContentWithTargetPath Include="NuGet.config.template" CopyToOutputDirectory="PreserveNewest" TargetPath="NuGet.config" />
-    <ContentWithTargetPath Include="global.json.template" CopyToOutputDirectory="PreserveNewest" TargetPath="global.json" />
-    <ContentWithTargetPath Include="Directory.Build.props.template" CopyToOutputDirectory="PreserveNewest" TargetPath="Directory.Build.props" />
-    <ContentWithTargetPath Include="Directory.Build.targets.template" CopyToOutputDirectory="PreserveNewest" TargetPath="Directory.Build.targets" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,4 +19,10 @@
     <PackageReference Include="WindowsAzure.Storage" />
   </ItemGroup>
 
+  <Target Name="CopyTemplates" BeforeTargets="Build">
+    <Copy SourceFiles="NuGet.config.template" DestinationFiles="..\..\artifacts\NuGet.config" />
+    <Copy SourceFiles="global.json.template" DestinationFiles="..\..\artifacts\global.json" />
+    <Copy SourceFiles="Directory.Build.props.template" DestinationFiles="..\..\artifacts\Directory.Build.props" />
+    <Copy SourceFiles="Directory.Build.targets.template" DestinationFiles="..\..\artifacts\Directory.Build.targets" />
+  </Target>
 </Project>
