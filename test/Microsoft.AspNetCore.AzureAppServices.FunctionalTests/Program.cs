@@ -96,7 +96,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         private static IEnumerable<(string Name, Func<Task> Execute)> GenerateTestCases(AzureFixture azureFixture, ILogger logger)
         {
-
             var deployMethods = new[]
             {
                 WebAppDeploymentKind.Git,
