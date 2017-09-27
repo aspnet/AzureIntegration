@@ -56,7 +56,7 @@
 
   </Target>
 
-  <Target Name="TestSiteExtension" DependsOnTargets="_AddTestRuntimes;InstallDotNet">
+  <Target Name="TestSiteExtension" DependsOnTargets="_AddTestRuntimes;InstallDotNet;Restore">
 
     <Exec Command="dotnet run" WorkingDirectory="$(RepositoryRoot)\test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests"/>
 
