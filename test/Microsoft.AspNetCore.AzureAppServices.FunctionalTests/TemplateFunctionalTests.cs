@@ -287,7 +287,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         private TestCommand DotNet(ILogger logger, DirectoryInfo workingDirectory, string suffix)
         {
-            var packages = Path.Combine(Program.ArtifactsPath, "packages", suffix);
+            var packages = Path.Combine(Program.ArtifactsPath, "packages", workingDirectory.Name);
             Directory.CreateDirectory(packages);
             var path = string.Join(";",
                 Environment.GetEnvironmentVariable("PATH")
