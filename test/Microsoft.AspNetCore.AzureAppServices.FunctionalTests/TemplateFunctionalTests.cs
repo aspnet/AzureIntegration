@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             // we are going to deploy with 2.0 dotnet to enable WebDeploy
             var dotnet20 = DotNet(_logger, testDirectory, "2.0");
 
-            CopyFilesToProjectDirectory(testDirectory, Asset($"AspNetCore1xMvc{template}"));
+            CopyFilesToProjectDirectory(testDirectory, Asset($"AspNetCore1x{template}"));
             CopyToProjectDirectory(testDirectory, Asset($"NuGet.{templateVersion}.config"), "NuGet.config", false);
             CopyToProjectDirectory(testDirectory, Asset($"Legacy.{templateVersion}.{template}.csproj"));
             InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
@@ -263,8 +263,8 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
         private static void CopyFilesToProjectDirectory(DirectoryInfo projectRoot, string directory)
         {
-            var source = projectRoot.FullName;
-            var dest = Path.GetFullPath(directory);
+            var source = directory;
+            var dest = Path.GetFullPath(projectRoot.FullName);
 
             foreach (string path in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
             {
