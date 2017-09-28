@@ -42,15 +42,12 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
 
             var testDirectory = GetTestDirectory(testId);
 
-            var dotnet = DotNet(_logger, testDirectory, "1.1");
             // we are going to deploy with 2.0 dotnet to enable WebDeploy
             var dotnet20 = DotNet(_logger, testDirectory, "2.0");
 
-            await dotnet.ExecuteAndAssertAsync($"--info");
-            await dotnet.ExecuteAndAssertAsync($"new {template} --no-restore");
-
-            UpdateCSProj(testDirectory, Asset($"Legacy.{templateVersion}.{template}.csproj"));
+            CopyFilesToProjectDirectory(testDirectory, Asset($"AspNetCore1xMvc{template}"));
             CopyToProjectDirectory(testDirectory, Asset($"NuGet.{templateVersion}.config"), "NuGet.config", false);
+            CopyToProjectDirectory(testDirectory, Asset($"Legacy.{templateVersion}.{template}.csproj"));
             InjectMiddlware(testDirectory, RuntimeInformationMiddlewareType, RuntimeInformationMiddlewareFile);
 
             await dotnet20.ExecuteAndAssertAsync("restore");
@@ -71,14 +68,13 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                 _logger.LogTrace("Runtime info: {Info}", runtimeInfoJson);
 
                 var runtimeInfo = JsonConvert.DeserializeObject<RuntimeInfo>(runtimeInfoJson);
-                ValidateLegacyRuntimeInfo(deploymentKind, runtimeInfo, templateVersion, expectedRuntime, dotnet.Command);
+                ValidateLegacyRuntimeInfo(deploymentKind, runtimeInfo, templateVersion);
             }
         }
 
-        private void ValidateLegacyRuntimeInfo(WebAppDeploymentKind deploymentKind, RuntimeInfo runtimeInfo, string templateVersion, string expectedRuntime, string dotnetPath)
+        private void ValidateLegacyRuntimeInfo(WebAppDeploymentKind deploymentKind, RuntimeInfo runtimeInfo, string templateVersion)
         {
             var cacheAssemblies = new HashSet<string>(File.ReadAllLines(Asset($"DotNetCache.{deploymentKind}.{templateVersion}.txt")), StringComparer.InvariantCultureIgnoreCase);
-            var runtimeModules = PathUtilities.GetSharedRuntimeAssemblies(dotnetPath, expectedRuntime);
             var modulesNotInCache = new List<string>();
 
             foreach (var runtimeInfoModule in runtimeInfo.Modules)
@@ -89,12 +85,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     continue;
                 }
 
-                // Verify that modules that we expect to come from runtime actually come from there
-                if (runtimeModules.Any(rutimeModule => runtimeInfoModule.ModuleName.Equals(rutimeModule, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    Assert.Contains($"shared\\Microsoft.NETCore.App\\{expectedRuntime}", runtimeInfoModule.FileName);
-                    continue;
-                }
 
                 // Check if assembly that is in the cache is loaded from it
                 var moduleName = Path.GetFileNameWithoutExtension(runtimeInfoModule.ModuleName);
@@ -270,6 +260,23 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
             }
             return assemblyInformationalVersionAttribute.InformationalVersion;
         }
+
+        private static void CopyFilesToProjectDirectory(DirectoryInfo projectRoot, string directory)
+        {
+            var source = projectRoot.FullName;
+            var dest = Path.GetFullPath(directory);
+
+            foreach (string path in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(path.Replace(source, dest));
+            }
+
+            foreach (string path in Directory.GetFiles(source, "*.*", SearchOption.AllDirectories))
+            {
+                File.Copy(path, path.Replace(source, dest), true);
+            }
+        }
+
 
         private static void CopyToProjectDirectory(DirectoryInfo projectRoot, string fileName, string desinationFileName = null, bool required = true)
         {
