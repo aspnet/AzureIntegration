@@ -5,6 +5,7 @@
       <AppsArtifactDirectory>$(RepositoryRoot)artifacts\apps</AppsArtifactDirectory>
       <SiteExtensionWorkingDirectory>$(TestDotNetPath)extension\</SiteExtensionWorkingDirectory>
       <SiteExtensionProjectDirectory>$(RepositoryRoot)src\Microsoft.AspNetCore.AzureAppServices.TestBundle\</SiteExtensionProjectDirectory>
+      <TestProjectDirectory>$(RepositoryRoot)\test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests\</TestProjectDirectory>
       <SiteExtensionFeed Condition="$(SiteExtensionFeed) == ''">https://dotnet.myget.org/F/aspnetcore-ci-dev/</SiteExtensionFeed>
       <DotnetChannel>master</DotnetChannel>
       <DotnetVersion>coherent</DotnetVersion>
@@ -12,9 +13,9 @@
 
   <Target Name="_AddTestRuntimes">
     <ItemGroup>
-      <DotNetCoreSdk Include="2.0.0" InstallDir="$(TestDotNetPath)2.0\" />
-      <DotNetCoreSdk Include="1.1.4" InstallDir="$(TestDotNetPath)1.1\" />
-      <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(TestDotNetPath)latest\" />
+      <DotNetCoreSdk Include="2.0.0" InstallDir="$(TestDotNetPath)2.0\" FallbackPackageCache="False" />
+      <DotNetCoreSdk Include="1.1.4" InstallDir="$(TestDotNetPath)1.1\" FallbackPackageCache="True"/>
+      <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(TestDotNetPath)latest\" FallbackPackageCache="True" />
     </ItemGroup>
   </Target>
 
@@ -58,7 +59,15 @@
 
   <Target Name="TestSiteExtension" DependsOnTargets="_AddTestRuntimes;InstallDotNet;Restore">
 
-    <Exec Command="dotnet run" WorkingDirectory="$(RepositoryRoot)\test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests"/>
+
+    <Copy SourceFiles="$(TestProjectDirectory)NuGet.config.template" DestinationFiles="$(RepositoryRoot)artifacts\NuGet.config" />
+    <Copy SourceFiles="$(TestProjectDirectory)global.json.template" DestinationFiles="$(RepositoryRoot)artifacts\global.json" />
+    <Copy SourceFiles="$(TestProjectDirectory)Directory.Build.props.template" DestinationFiles="$(RepositoryRoot)artifacts\Directory.Build.props" />
+    <Copy SourceFiles="$(TestProjectDirectory)Directory.Build.targets.template" DestinationFiles="$(RepositoryRoot)artifacts\Directory.Build.targets" />
+
+    <Exec Command="%(DotNetCoreSdk.InstallDir)dotnet msbuild /version" Condition="'%(DotNetCoreSdk.FallbackPackageCache)' == 'True'" WorkingDirectory="$(RepositoryRoot)artifacts\" />
+
+    <Exec Command="dotnet run" WorkingDirectory="$(TestProjectDirectory)"/>
 
   </Target>
 

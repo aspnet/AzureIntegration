@@ -19,10 +19,4 @@
     <PackageReference Include="WindowsAzure.Storage" />
   </ItemGroup>
 
-  <Target Name="CopyTemplates" BeforeTargets="Build">
-    <Copy SourceFiles="NuGet.config.template" DestinationFiles="..\..\artifacts\NuGet.config" />
-    <Copy SourceFiles="global.json.template" DestinationFiles="..\..\artifacts\global.json" />
-    <Copy SourceFiles="Directory.Build.props.template" DestinationFiles="..\..\artifacts\Directory.Build.props" />
-    <Copy SourceFiles="Directory.Build.targets.template" DestinationFiles="..\..\artifacts\Directory.Build.targets" />
-  </Target>
 </Project>
