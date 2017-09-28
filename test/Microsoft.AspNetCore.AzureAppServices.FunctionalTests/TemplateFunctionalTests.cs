@@ -106,8 +106,6 @@ namespace Microsoft.AspNetCore.AzureAppServices.FunctionalTests
                     }
                     continue;
                 }
-
-                Assert.Contains("wwwroot\\", runtimeInfoModule.FileName);
             }
 
             Assert.Empty(modulesNotInCache);
