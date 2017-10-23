@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
 {
     internal static class HostingStartupConfigurationExtensions
     {
-        public static bool IsEnabled(this IConfiguration configuration, string hostingStartupName) => IsEnabled(configuration, hostingStartupName, "Enable");
-
         public static bool IsEnabled(this IConfiguration configuration, string hostingStartupName, string featureName)
         {
             if (configuration.TryGetOption(hostingStartupName, featureName, out var value))
@@ -19,7 +20,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
 
         public static bool TryGetOption(this IConfiguration configuration, string hostingStartupName, string featureName, out string value)
         {
-            value = configuration[$"Lightup:{hostingStartupName}:{featureName}"];
+            value = configuration[$"HostingStartup:{hostingStartupName}:{featureName}"];
             return !string.IsNullOrEmpty(value);
         }
     }

@@ -20,7 +20,9 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
     {
         private const string HostingStartupName = "KeyVault";
         private const string ConfigurationFeatureName = "Configuration";
+        private const string ConfigurationVaultName = "ConfigurationVault";
         private const string DataProtectionFeatureName = "DataProtection";
+        private const string DataProtectionKeyName = "DataProtectionKey";
 
         /// <inheritdoc />
         public void Configure(IWebHostBuilder builder)
@@ -33,30 +35,39 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
 
-            if (baseConfiguration.IsEnabled(HostingStartupName))
+            builder.ConfigureServices((context, collection) =>
             {
-                builder.ConfigureServices((context, collection) =>
-                {
-                    var configuration = new ConfigurationBuilder()
-                        .AddConfiguration(baseConfiguration)
-                        .AddConfiguration(context.Configuration)
-                        .Build();
+                var configuration = new ConfigurationBuilder()
+                    .AddConfiguration(baseConfiguration)
+                    .AddConfiguration(context.Configuration)
+                    .Build();
 
-                    if (configuration.IsEnabled(HostingStartupName, DataProtectionFeatureName))
-                    {
-                        collection.AddDataProtection().ProtectKeysWithAzureKeyVault(keyVaultClient, null);
-                    }
-                });
-
-                if (baseConfiguration.IsEnabled(HostingStartupName, ConfigurationFeatureName) &&
-                    baseConfiguration.TryGetOption(HostingStartupName, ConfigurationFeatureName, out var vault))
+                if (configuration.IsEnabled(HostingStartupName, DataProtectionFeatureName) &&
+                    configuration.TryGetOption(HostingStartupName, DataProtectionKeyName, out var protectionKey))
                 {
-                    builder.ConfigureAppConfiguration((context, configurationBuilder) =>
-                    {
-                        configurationBuilder.AddAzureKeyVault(vault, keyVaultClient, new DefaultKeyVaultSecretManager());
-                    });
+                    AddDataProtection(collection, keyVaultClient, protectionKey);
                 }
+            });
+
+            if (baseConfiguration.IsEnabled(HostingStartupName, ConfigurationFeatureName) &&
+                baseConfiguration.TryGetOption(HostingStartupName, ConfigurationVaultName, out var vault))
+            {
+                builder.ConfigureAppConfiguration((context, configurationBuilder) =>
+                {
+                    AddConfiguration(configurationBuilder, keyVaultClient, vault);
+                });
             }
         }
+
+        internal virtual void AddDataProtection(IServiceCollection serviceCollection, KeyVaultClient client, string protectionKey)
+        {
+            serviceCollection.AddDataProtection().ProtectKeysWithAzureKeyVault(client, protectionKey);
+        }
+
+        internal virtual void AddConfiguration(IConfigurationBuilder configurationBuilder, KeyVaultClient client, string keyVault)
+        {
+            configurationBuilder.AddAzureKeyVault(keyVault, client, new DefaultKeyVaultSecretManager());
+        }
+
     }
 }

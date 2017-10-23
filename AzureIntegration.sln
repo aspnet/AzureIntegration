@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27016.1
 MinimumVisualStudioVersion = 15.0.26730.03
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureAppServicesIntegration", "src\Microsoft.AspNetCore.AzureAppServicesIntegration\Microsoft.AspNetCore.AzureAppServicesIntegration.csproj", "{5916BEB5-0969-469B-976C-A392E015DFAC}"
 EndProject
@@ -46,11 +46,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureAppServices.TestBundle", "src\Microsoft.AspNetCore.AzureAppServices.TestBundle\Microsoft.AspNetCore.AzureAppServices.TestBundle.csproj", "{1EC31DA1-131D-4257-B001-BE8391E6077E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Web.Xdt.Extensions.Tests", "test\Microsoft.Web.Xdt.Extensions.Tests\Microsoft.Web.Xdt.Extensions.Tests.csproj", "{809AEE05-1B28-4E31-8959-776B249BD725}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Web.Xdt.Extensions.Tests", "test\Microsoft.Web.Xdt.Extensions.Tests\Microsoft.Web.Xdt.Extensions.Tests.csproj", "{809AEE05-1B28-4E31-8959-776B249BD725}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests", "test\Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests\Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests.csproj", "{491A857A-3529-4375-985D-D748F9F01476}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests", "test\Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests\Microsoft.AspNetCore.AzureAppServices.SiteExtension.Tests.csproj", "{491A857A-3529-4375-985D-D748F9F01476}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureKeyVault.HostingStartup", "src\Microsoft.AspNetCore.AzureKeyVault.HostingStartup\Microsoft.AspNetCore.AzureKeyVault.HostingStartup.csproj", "{5037025B-30CD-4350-9400-59C4728BE90D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests", "test\Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests\Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests.csproj", "{4E554756-2FF4-4293-B24C-A1C2AF345FE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,10 +108,6 @@ Global
 		{1EC31DA1-131D-4257-B001-BE8391E6077E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC31DA1-131D-4257-B001-BE8391E6077E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC31DA1-131D-4257-B001-BE8391E6077E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5037025B-30CD-4350-9400-59C4728BE90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5037025B-30CD-4350-9400-59C4728BE90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5037025B-30CD-4350-9400-59C4728BE90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5037025B-30CD-4350-9400-59C4728BE90D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -118,6 +116,14 @@ Global
 		{491A857A-3529-4375-985D-D748F9F01476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{491A857A-3529-4375-985D-D748F9F01476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{491A857A-3529-4375-985D-D748F9F01476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5037025B-30CD-4350-9400-59C4728BE90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5037025B-30CD-4350-9400-59C4728BE90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5037025B-30CD-4350-9400-59C4728BE90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5037025B-30CD-4350-9400-59C4728BE90D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E554756-2FF4-4293-B24C-A1C2AF345FE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E554756-2FF4-4293-B24C-A1C2AF345FE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E554756-2FF4-4293-B24C-A1C2AF345FE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E554756-2FF4-4293-B24C-A1C2AF345FE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +144,7 @@ Global
 		{809AEE05-1B28-4E31-8959-776B249BD725} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
 		{491A857A-3529-4375-985D-D748F9F01476} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
 		{5037025B-30CD-4350-9400-59C4728BE90D} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
+		{4E554756-2FF4-4293-B24C-A1C2AF345FE8} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5743DFE7-1AA5-439D-84AE-A480EA389927}
