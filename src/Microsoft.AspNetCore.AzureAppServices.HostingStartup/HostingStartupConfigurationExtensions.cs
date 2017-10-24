@@ -3,10 +3,16 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
+namespace Microsoft.AspNetCore.Hosting
 {
     internal static class HostingStartupConfigurationExtensions
     {
+        public static IConfiguration GetBaseConfiguration()
+        {
+            return new ConfigurationBuilder()
+                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
+                .Build();
+        }
         public static bool IsEnabled(this IConfiguration configuration, string hostingStartupName, string featureName)
         {
             if (configuration.TryGetOption(hostingStartupName, featureName, out var value))

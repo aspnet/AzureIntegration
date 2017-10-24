@@ -12,13 +12,21 @@ namespace Microsoft.AspNetCore.AzureAppServices.HostingStartup
     /// </summary>
     public class AzureAppServicesHostingStartup : IHostingStartup
     {
+        private const string HostingStartupName = "AppServices";
+        private const string DiagnosticsFeatureName = "Diagnostics";
+
         /// <summary>
         /// Calls UseAzureAppServices
         /// </summary>
         /// <param name="builder"></param>
         public void Configure(IWebHostBuilder builder)
         {
-            builder.UseAzureAppServices();
+            var baseConfiguration = HostingStartupConfigurationExtensions.GetBaseConfiguration();
+
+            if (baseConfiguration.IsEnabled(HostingStartupName, DiagnosticsFeatureName))
+            {
+                builder.UseAzureAppServices();
+            }
         }
     }
 }

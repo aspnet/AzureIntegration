@@ -31,9 +31,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
             var authenticationCallback = new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback);
             var keyVaultClient = new KeyVaultClient(authenticationCallback);
 
-            var baseConfiguration = new ConfigurationBuilder()
-                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
-                .Build();
+            var baseConfiguration = HostingStartupConfigurationExtensions.GetBaseConfiguration();
 
             builder.ConfigureServices((context, collection) =>
             {
@@ -68,6 +66,5 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
         {
             configurationBuilder.AddAzureKeyVault(keyVault, client, new DefaultKeyVaultSecretManager());
         }
-
     }
 }
