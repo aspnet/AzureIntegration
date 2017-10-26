@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.AzureKeyVault" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.Service.AzureKeyVault" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.0-preview" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" />
   </ItemGroup>
 
 </Project>
