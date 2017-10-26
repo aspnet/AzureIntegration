@@ -19,9 +19,9 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
     public class AzureKeyVaultHostingStartup : IHostingStartup
     {
         private const string HostingStartupName = "KeyVault";
-        private const string ConfigurationFeatureName = "Configuration";
+        private const string ConfigurationFeatureName = "ConfigurationEnabled";
         private const string ConfigurationVaultName = "ConfigurationVault";
-        private const string DataProtectionFeatureName = "DataProtection";
+        private const string DataProtectionFeatureName = "DataProtectionEnabled";
         private const string DataProtectionKeyName = "DataProtectionKey";
 
         /// <inheritdoc />

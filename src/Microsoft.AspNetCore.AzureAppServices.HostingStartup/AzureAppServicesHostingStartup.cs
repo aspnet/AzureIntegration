@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.AzureAppServices.HostingStartup
     public class AzureAppServicesHostingStartup : IHostingStartup
     {
         private const string HostingStartupName = "AppServices";
-        private const string DiagnosticsFeatureName = "Diagnostics";
+        private const string DiagnosticsFeatureName = "DiagnosticsEnabled";
 
         /// <summary>
         /// Calls UseAzureAppServices
