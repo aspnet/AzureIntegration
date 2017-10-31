@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests
         [Fact]
         public void Configure_AddsDataProtection()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtection", null);
+            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtectionEnabled", null);
             Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtectionKey", "http://vault");
 
             var callbackCalled = false;
@@ -45,7 +45,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests
         [InlineData("false")]
         public void Configure_SkipsAddsDataProtection_IfDisabled(string value)
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtection", value);
+            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtectionEnabled", value);
             Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__DataProtectionKey", "http://vault");
 
             var callbackCalled = false;
@@ -67,7 +67,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests
         [Fact]
         public void Configure_AddsConfiguration()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__Configuration", null);
+            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__ConfigurationEnabled", null);
             Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__ConfigurationVault", "http://vault");
 
             var callbackCalled = false;
@@ -96,7 +96,7 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup.Tests
         [InlineData("false")]
         public void Configure_SkipsConfiguration_IfDisabled(string value)
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__Configuration", value);
+            Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__ConfigurationEnabled", value);
             Environment.SetEnvironmentVariable("ASPNETCORE_HostingStartup__KeyVault__ConfigurationVault", "http://vault");
 
             var callbackCalled = false;
