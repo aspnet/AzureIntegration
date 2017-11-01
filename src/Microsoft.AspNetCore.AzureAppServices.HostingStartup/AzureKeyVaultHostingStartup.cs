@@ -61,8 +61,11 @@ namespace Microsoft.AspNetCore.AzureKeyVault.HostingStartup
 
         internal virtual void AddDataProtection(IServiceCollection serviceCollection, KeyVaultClient client, string protectionKey)
         {
-            // This part has to duplicate functionality from GetKeyStorageDirectoryForAzureWebSites in DataProtection
+            // Duplicates functionality from GetKeyStorageDirectoryForAzureWebSites in DataProtection
+            // to detect key storage location when running on Azure
             // because you are not alowed to set IXmlEncryptor without setting IXmlRepository
+
+            // Check that we are running in Azure AppServices
             var siteId = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
             if (string.IsNullOrWhiteSpace(siteId))
             {
