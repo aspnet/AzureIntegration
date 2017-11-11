@@ -25,17 +25,4 @@ namespace Microsoft.AspNetCore.Hosting
             return hostBuilder;
         }
     }
-
-    public class AppModelDetectionResult
-    {
-        public RuntimeFramework? Framework { get; set; }
-        public string FrameworkVersion { get; set; }
-        public string AspNetCoreVersion { get; set; }
-    }
-
-    public enum RuntimeFramework
-    {
-        DotNetCore,
-        DotNetFramework
-    }
 }

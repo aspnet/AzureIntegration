@@ -1,3 +1,6 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System;
 using System.IO;
 using System.Linq;
@@ -34,13 +37,23 @@ namespace Microsoft.AspNetCore.Hosting
             // If we found entry point let's look for .deps.json
             // in some cases it exists in desktop too
             FileInfo depsJson = null;
+            FileInfo runtimeConfig = null;
+
             if (!string.IsNullOrWhiteSpace(entryPoint))
             {
-                depsJson = new FileInfo(entryPoint + ".deps.json");
+                depsJson = new FileInfo(Path.ChangeExtension(entryPoint, ".deps.json"));
+                runtimeConfig = new FileInfo(Path.ChangeExtension(entryPoint, ".runtimeconfig.json"));
             }
-            else
+
+            if (depsJson == null || !depsJson.Exists)
             {
                 depsJson = directory.GetFiles("*.deps.json").FirstOrDefault();
+            }
+
+            if (runtimeConfig == null || !runtimeConfig.Exists)
+            {
+
+                runtimeConfig = directory.GetFiles("*.runtimeconfig.json").FirstOrDefault();
             }
 
             if (depsJson != null &&
@@ -61,16 +74,14 @@ namespace Microsoft.AspNetCore.Hosting
                 }
             }
 
-            if (result.Framework == RuntimeFramework.DotNetCore)
+            if (result.Framework == RuntimeFramework.DotNetCore &&
+                runtimeConfig != null &&
+                runtimeConfig.Exists &&
+                TryParseRuntimeConfig(runtimeConfig, out var runtimeVersion))
             {
-                var runtimeConfig = new FileInfo(entryPoint + ".runtimeconfig.json");
-
-                if (runtimeConfig.Exists &&
-                    TryParseRuntimeConfig(runtimeConfig, out var runtimeVersion))
-                {
-                    result.FrameworkVersion = runtimeVersion;
-                }
+                result.FrameworkVersion = runtimeVersion;
             }
+
             return result;
         }
 
@@ -104,20 +115,24 @@ namespace Microsoft.AspNetCore.Hosting
                 {
                     var json = JObject.Load(jsonReader);
 
-                    json.Ancestors().Where((token, i) => token is JProperty property && property.Name.StartsWith(""))
+                    var libraryPrefix = AspNetCoreAssembly+ "/";
 
-                    return true;
+                    var library = json.Descendants().OfType<JProperty>().FirstOrDefault(property => property.Name.StartsWith(libraryPrefix));
+                    if (library != null)
+                    {
+                        aspnetCoreVersion = library.Name.Substring(libraryPrefix.Length);
+                        return true;
+                    }
                 }
             }
             catch (Exception)
             {
-                return false;
             }
+            return false;
         }
 
         private bool TryParseRuntimeConfig(FileInfo runtimeConfig, out string frameworkVersion)
         {
-
             frameworkVersion = null;
             try
             {
@@ -165,11 +180,11 @@ namespace Microsoft.AspNetCore.Hosting
                     framework = RuntimeFramework.DotNetCore;
                     var entryPointPart = arguments.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-                    if (string.IsNullOrWhiteSpace(entryPointPart))
+                    if (!string.IsNullOrWhiteSpace(entryPointPart))
                     {
                         try
                         {
-                            entryPoint = Path.GetFullPath(entryPointPart);
+                            entryPoint = Path.GetFullPath(Path.Combine(webConfig.DirectoryName, entryPointPart));
                         }
                         catch (Exception)
                         {
@@ -182,7 +197,7 @@ namespace Microsoft.AspNetCore.Hosting
 
                     try
                     {
-                        entryPoint = Path.GetFullPath(processPath);
+                        entryPoint = Path.GetFullPath(Path.Combine(webConfig.DirectoryName, processPath));
                     }
                     catch (Exception)
                     {    
