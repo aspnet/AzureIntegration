@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
 
@@ -11,6 +10,8 @@ namespace Microsoft.AspNetCore.AzureAppServicesIntegration.Tests
 {
     public class AppModelTests
     {
+        private const string  EmptyWebConfig = @"<?xml version=""1.0"" encoding=""utf-8""?><configuration></configuration>";
+
         [Theory]
         [InlineData("dotnet")]
         [InlineData("dotnet.exe")]
@@ -138,6 +139,17 @@ namespace Microsoft.AspNetCore.AzureAppServicesIntegration.Tests
                 var result = new AppModelDetector().Detect(temp.Directory);
                 Assert.Equal(RuntimeFramework.DotNetCore, result.Framework);
                 Assert.Equal(runtimeVersion, result.AspNetCoreVersion);
+            }
+        }
+
+        [Fact]
+        public void DetectsFullFrameworkWhenWebConfigExists()
+        {
+            using (var temp = new TemporaryDirectory()
+                .WithFile("web.config", EmptyWebConfig))
+            {
+                var result = new AppModelDetector().Detect(temp.Directory);
+                Assert.Equal(RuntimeFramework.DotNetFramework, result.Framework);
             }
         }
 

@@ -32,6 +32,11 @@ namespace Microsoft.AspNetCore.Hosting
                 {
                     result.Framework = framework;
                 }
+                else
+                {
+                    // web.config exists so default to full framework
+                    result.Framework = RuntimeFramework.DotNetFramework;
+                }
             }
 
             // If we found entry point let's look for .deps.json
