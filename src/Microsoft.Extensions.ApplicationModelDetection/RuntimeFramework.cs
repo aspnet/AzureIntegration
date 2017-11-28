@@ -6,6 +6,7 @@ namespace Microsoft.AspNetCore.Hosting
     public enum RuntimeFramework
     {
         DotNetCore,
+        DotNetCoreStandalone,
         DotNetFramework
     }
 }

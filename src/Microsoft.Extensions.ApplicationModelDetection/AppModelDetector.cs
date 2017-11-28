@@ -19,24 +19,29 @@ namespace Microsoft.AspNetCore.Hosting
         // would have to be used by aspnet core web apps
         private const string AspNetCoreAssembly = "Microsoft.AspNetCore.Hosting";
 
+        /// <summary>
+        /// Reads the following sources"
+        ///     - web.config to detect dotnet framework kind
+        ///     - *.runtimeconfig.json to detect target framework version
+        ///     - *.deps.json to detect Asp.Net Core version
+        ///     - Microsoft.AspNetCore.Hosting.dll to detect Asp.Net Core version
+        /// </summary>
+        /// <param name="directory">The application directory</param>
+        /// <returns>The <see cref="AppModelDetectionResult"/> instance containing information about application</returns>
         public AppModelDetectionResult Detect(DirectoryInfo directory)
         {
-            var result = new AppModelDetectionResult();
             string entryPoint = null;
 
             // Try reading web.config and resolving framework and app path
-            var webConfig = new FileInfo(Path.Combine(directory.FullName, "web.config"));
-            if (webConfig.Exists)
+            var webConfig = directory.GetFiles("web.config").FirstOrDefault();
+
+            bool webConfigExists = webConfig != null;
+            bool? usesDotnetExe = null;
+
+            if (webConfigExists &&
+                TryParseWebConfig(webConfig, out var dotnetExe, out entryPoint))
             {
-                if (TryParseWebConfig(webConfig, out var framework, out entryPoint))
-                {
-                    result.Framework = framework;
-                }
-                else
-                {
-                    // web.config exists so default to full framework
-                    result.Framework = RuntimeFramework.DotNetFramework;
-                }
+                usesDotnetExe = dotnetExe;
             }
 
             // If we found entry point let's look for .deps.json
@@ -57,35 +62,57 @@ namespace Microsoft.AspNetCore.Hosting
 
             if (runtimeConfig == null || !runtimeConfig.Exists)
             {
-
                 runtimeConfig = directory.GetFiles("*.runtimeconfig.json").FirstOrDefault();
             }
 
+            string aspNetCoreVersionFromDeps = null;
+            string aspNetCoreVersionFromDll = null;
+
+
+            // Try to detect ASP.NET Core version from .deps.json
             if (depsJson != null &&
                 depsJson.Exists  &&
                 TryParseDependencies(depsJson, out var aspNetCoreVersion))
             {
-                result.AspNetCoreVersion = aspNetCoreVersion;
+                aspNetCoreVersionFromDeps = aspNetCoreVersion;
             }
 
-            // Lets try assembly version
-            if (string.IsNullOrWhiteSpace(result.AspNetCoreVersion))
+            // Try to detect ASP.NET Core version from .deps.json
+            var aspNetCoreDll = directory.GetFiles(AspNetCoreAssembly + ".dll").FirstOrDefault();
+            if (aspNetCoreDll != null &&
+                TryParseAssembly(aspNetCoreDll, out aspNetCoreVersion))
             {
-                var aspNetCoreDll = new FileInfo(Path.Combine(directory.FullName, AspNetCoreAssembly + ".dll"));
-                if (aspNetCoreDll.Exists &&
-                    TryParseAssembly(aspNetCoreDll, out aspNetCoreVersion))
+                aspNetCoreVersionFromDll = aspNetCoreVersion;
+            }
+
+            // Try to detect dotnet core runtime version from runtimeconfig.json
+            string runtimeVersionFromRuntimeConfig = null;
+            if (runtimeConfig != null &&
+                runtimeConfig.Exists)
+            {
+                TryParseRuntimeConfig(runtimeConfig, out runtimeVersionFromRuntimeConfig);
+            }
+
+            var result = new AppModelDetectionResult();
+            if (usesDotnetExe == true)
+            {
+                result.Framework = RuntimeFramework.DotNetCore;
+                result.FrameworkVersion = runtimeVersionFromRuntimeConfig;
+            }
+            else
+            {
+                if (depsJson?.Exists == true &&
+                    runtimeConfig?.Exists == true)
                 {
-                    result.AspNetCoreVersion = aspNetCoreVersion;
+                    result.Framework = RuntimeFramework.DotNetCoreStandalone;
+                }
+                else
+                {
+                    result.Framework = RuntimeFramework.DotNetFramework;
                 }
             }
 
-            if (result.Framework == RuntimeFramework.DotNetCore &&
-                runtimeConfig != null &&
-                runtimeConfig.Exists &&
-                TryParseRuntimeConfig(runtimeConfig, out var runtimeVersion))
-            {
-                result.FrameworkVersion = runtimeVersion;
-            }
+            result.AspNetCoreVersion = aspNetCoreVersionFromDeps ?? aspNetCoreVersionFromDll;
 
             return result;
         }
@@ -110,6 +137,9 @@ namespace Microsoft.AspNetCore.Hosting
             }
         }
 
+        /// <summary>
+        /// Search for Microsoft.AspNetCore.Hosting entry in deps.json and get it's version number
+        /// </summary>
         private bool TryParseDependencies(FileInfo depsJson, out string aspnetCoreVersion)
         {
             aspnetCoreVersion = null;
@@ -158,9 +188,9 @@ namespace Microsoft.AspNetCore.Hosting
             }
         }
 
-        private bool TryParseWebConfig(FileInfo webConfig, out RuntimeFramework? framework, out string entryPoint)
+        private bool TryParseWebConfig(FileInfo webConfig, out bool usesDotnetExe, out string entryPoint)
         {
-            framework = null;
+            usesDotnetExe = false;
             entryPoint = null;
 
             try
@@ -182,7 +212,7 @@ namespace Microsoft.AspNetCore.Hosting
                     processPath.EndsWith("dotnet.exe", StringComparison.OrdinalIgnoreCase) &&
                     !string.IsNullOrWhiteSpace(arguments))
                 {
-                    framework = RuntimeFramework.DotNetCore;
+                    usesDotnetExe = true;
                     var entryPointPart = arguments.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
                     if (!string.IsNullOrWhiteSpace(entryPointPart))
@@ -198,14 +228,14 @@ namespace Microsoft.AspNetCore.Hosting
                 }
                 else
                 {
-                    framework = RuntimeFramework.DotNetFramework;
+                    usesDotnetExe = false;
 
                     try
                     {
                         entryPoint = Path.GetFullPath(Path.Combine(webConfig.DirectoryName, processPath));
                     }
                     catch (Exception)
-                    {    
+                    {
                     }
                 }
             }

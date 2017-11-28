@@ -154,6 +154,19 @@ namespace Microsoft.AspNetCore.AzureAppServicesIntegration.Tests
         }
 
         [Fact]
+        public void DetectsStandalone_WhenBothDepsAndRuntimeConfigExist()
+        {
+            using (var temp = new TemporaryDirectory()
+                .WithFile("web.config", GenerateWebConfig("app.exe", ""))
+                .WithFile("app.runtimeconfig.json", "{}")
+                .WithFile("app.deps.json", "{}"))
+            {
+                var result = new AppModelDetector().Detect(temp.Directory);
+                Assert.Equal(RuntimeFramework.DotNetCoreStandalone, result.Framework);
+            }
+        }
+
+        [Fact]
         public void DetectsAspNetCoreVersionFromHostingDll()
         {
             using (var temp = new TemporaryDirectory()
