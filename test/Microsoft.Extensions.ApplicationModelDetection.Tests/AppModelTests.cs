@@ -6,7 +6,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
 
-namespace Microsoft.AspNetCore.AzureAppServicesIntegration.Tests
+namespace Microsoft.Extensions.ApplicationModelDetection.Tests
 {
     public class AppModelTests
     {

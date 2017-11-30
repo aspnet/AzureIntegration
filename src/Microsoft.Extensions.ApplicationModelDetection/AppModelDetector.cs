@@ -10,7 +10,7 @@ using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace Microsoft.Extensions.ApplicationModelDetection
 {
     public class AppModelDetector
     {
@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.Hosting
         private const string AspNetCoreAssembly = "Microsoft.AspNetCore.Hosting";
 
         /// <summary>
-        /// Reads the following sources"
+        /// Reads the following sources
         ///     - web.config to detect dotnet framework kind
         ///     - *.runtimeconfig.json to detect target framework version
         ///     - *.deps.json to detect Asp.Net Core version
