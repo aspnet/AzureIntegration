@@ -3,15 +3,11 @@
   <Import Project="..\..\build\hostingstartup.targets" />
 
   <PropertyGroup>
-    <Description>ASP.NET Core lightup integration with Azure AppServices.</Description>
+    <Description>ASP.NET Core lightup integration with Azure KeyVault.</Description>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.0;net461</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore;azure;appservices</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.AzureAppServicesIntegration\Microsoft.AspNetCore.AzureAppServicesIntegration.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftAspNetCoreHostingAbstractionsPackageVersion)" />
