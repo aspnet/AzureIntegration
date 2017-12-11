@@ -9,6 +9,8 @@
     <PackageType>AzureSiteExtension</PackageType>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <HostingStartupRuntimeFrameworkVersion>$(MicrosoftNETCoreApp21PackageVersion)</HostingStartupRuntimeFrameworkVersion>
+    <HostingStartupPackageDirectory>$(MSBuildThisFileDirectory)..\..\artifacts\build</HostingStartupPackageDirectory>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +20,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Web.Xdt.Extensions\Microsoft.Web.Xdt.Extensions.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.AspNetCore.AzureAppServices.HostingStartup\Microsoft.AspNetCore.AzureAppServices.HostingStartup.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\Microsoft.AspNetCore.AzureKeyVault.HostingStartup\Microsoft.AspNetCore.AzureKeyVault.HostingStartup.csproj" PrivateAssets="All" />
+
+
+    <HostingStartupPackageReference Include="Microsoft.AspNetCore.AzureAppServices.HostingStartup" Version="$(PackageVersion)" Source="$(HostingStartupPackageDirectory)" />
+    <HostingStartupPackageReference Include="Microsoft.AspNetCore.AzureKeyVault.HostingStartup" Version="$(PackageVersion)" Source="$(HostingStartupPackageDirectory)" />
+
+    <PackageReference Include="Internal.AspNetCore.SiteExtension.Sdk" Version="$(InternalAspNetCoreSiteExtensionSdkPackageVersion)" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
