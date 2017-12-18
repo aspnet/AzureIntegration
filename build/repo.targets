@@ -1,4 +1,5 @@
 <Project>
+  <Import Project="$(RepositoryRoot)\build\dependencies.props" />
 
   <PropertyGroup>
       <TestDotNetPath>$(RepositoryRoot).test-dotnet\</TestDotNetPath>
@@ -23,22 +24,38 @@
   <Target Name="_AddTestRuntimes">
     <ItemGroup>
       <DotNetCoreSdk Include="2.0.0" InstallDir="$(TestDotNetPath)2.0\" FallbackPackageCache="True" />
-      <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(TestDotNetPath)latest\" FallbackPackageCache="True" />
+      <DotNetCoreSdk Include="$(MicrosoftNETCoreApp21PackageVersion)" Channel="master" InstallDir="$(TestDotNetPath)latest\" FallbackPackageCache="True" />
     </ItemGroup>
   </Target>
 
-  <Target Name="_AddSiteExtensionRuntimes">
+  <Target Name="_AddSiteExtensionRuntime">
     <ItemGroup>
-      <DotNetCoreSdk Include="coherent" Channel="master" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
+      <DotNetCoreRuntime Include="$(MicrosoftNETCoreApp21PackageVersion)" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
     </ItemGroup>
   </Target>
 
-  <Target Name="BuildSiteExtension" DependsOnTargets="_AddSiteExtensionRuntimes;InstallDotNet">
+  <Target Name="BuildSiteExtension" DependsOnTargets="_AddSiteExtensionRuntime;InstallDotNet">
+    <PropertyGroup>
+      <ArtifactDependencyLocation>$(RepositoryRoot)\.deps</ArtifactDependencyLocation>
+      <_SdkVersion>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName('$(MSBuildExtensionsPath)'))))</_SdkVersion>
+    </PropertyGroup>
+
     <ItemGroup>
       <RuntimeArchiveItems Include="$(RuntimeArchives)" />
       <DotNetCacheArchiveItems Include="$(DotNetCacheArchives)" />
+      <_SdkFiles Include="$(MSBuildExtensionsPath)\**\*" />
+
+      <BundledTemplate Include="Microsoft.DotNet.Web.ItemTemplates" Version="$(PackageVersion)" />
+      <BundledTemplate Include="Microsoft.DotNet.Web.ProjectTemplates.2.1" Version="$(PackageVersion)" />
+      <BundledTemplate Include="Microsoft.DotNet.Web.Spa.ProjectTemplates" Version="$(PackageVersion)" />
     </ItemGroup>
 
+    <RemoveDir Directories="$(SiteExtensionWorkingDirectory)" Condition="Exists($(SiteExtSiteExtensionWorkingDirectoryensionOutputDirectory))" />
+
+    <Copy SourceFiles="@(_SdkFiles)" DestinationFolder="$(SiteExtensionWorkingDirectory)\sdk\$(_SdkVersion)\%(RecursiveDir)" />
+    <Copy SourceFiles="$(ArtifactDependencyLocation)\%(BundledTemplate.Identity).%(Version).nupkg" DestinationFolder="$(SiteExtensionWorkingDirectory)\sdk\$(_SdkVersion)\Templates" />
+
+    <UnzipArchive File="$(ArtifactDependencyLocation)\aspnetcore-shared-$(PackageVersion)-win7-x86.zip" Destination="$(SiteExtensionWorkingDirectory)" Overwrite="true" />
     <UnzipArchive File="%(RuntimeArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)" Condition="'$(RuntimeArchives)' != ''" Overwrite="true" />
     <UnzipArchive File="%(DotNetCacheArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)DotNetCache" Condition="'$(DotNetCacheArchives)' != ''" Overwrite="true" />
 
