@@ -42,10 +42,6 @@
   </Target>
 
   <Target Name="BuildSiteExtension" DependsOnTargets="_CleanSiteExtension;_AddSiteExtensionRuntime;InstallDotNet">
-    <PropertyGroup>
-      <ArtifactDependencyLocation>$(RepositoryRoot)\.deps</ArtifactDependencyLocation>
-    </PropertyGroup>
-
     <ItemGroup>
       <RuntimeArchiveItems Include="$(RuntimeArchives)" />
       <DotNetCacheArchiveItems Include="$(DotNetCacheArchives)" />
