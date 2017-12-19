@@ -2,6 +2,7 @@
   <Import Project="$(RepositoryRoot)\build\dependencies.props" />
 
   <PropertyGroup>
+      <_SdkVersion>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName('$(MSBuildExtensionsPath)'))))</_SdkVersion>
       <TestDotNetPath>$(RepositoryRoot).test-dotnet\</TestDotNetPath>
       <AppsArtifactDirectory>$(RepositoryRoot)artifacts\apps</AppsArtifactDirectory>
       <SiteExtensionWorkingDirectory>$(TestDotNetPath)extension\</SiteExtensionWorkingDirectory>
@@ -24,7 +25,7 @@
   <Target Name="_AddTestRuntimes">
     <ItemGroup>
       <DotNetCoreSdk Include="2.0.0" InstallDir="$(TestDotNetPath)2.0\" FallbackPackageCache="True" />
-      <DotNetCoreSdk Include="$(MicrosoftNETCoreApp21PackageVersion)" Channel="master" InstallDir="$(TestDotNetPath)latest\" FallbackPackageCache="True" />
+      <DotNetCoreSdk Include="$(_SdkVersion)" InstallDir="$(TestDotNetPath)latest\" FallbackPackageCache="True" />
     </ItemGroup>
   </Target>
 
@@ -33,9 +34,6 @@
   </Target>
 
   <Target Name="_AddSiteExtensionRuntime">
-    <PropertyGroup>
-      <_SdkVersion>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName('$(MSBuildExtensionsPath)'))))</_SdkVersion>
-    </PropertyGroup>
 
     <ItemGroup>
       <DotNetCoreSdk Include="$(_SdkVersion)" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
@@ -78,7 +76,7 @@
     <UnzipArchive File="%(RuntimeArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)" Condition="'$(RuntimeArchives)' != ''" Overwrite="true" />
     <UnzipArchive File="%(DotNetCacheArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)DotNetCache" Condition="'$(DotNetCacheArchives)' != ''" Overwrite="true" />
 
-    <MSBuild Projects="%(SiteExtensions.Idenity)"
+    <MSBuild Projects="%(SiteExtensions.Identity)"
       Targets="Restore;Pack"
       Properties="DotnetHomeDirectory=$(SiteExtensionWorkingDirectory);BuildNumber=$(BuildNumber);PackageOutputPath=$(SiteExtensionOutputDirectory)" />
 
