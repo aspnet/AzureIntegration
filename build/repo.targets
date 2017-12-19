@@ -6,21 +6,12 @@
       <TestDotNetPath>$(RepositoryRoot).test-dotnet\</TestDotNetPath>
       <AppsArtifactDirectory>$(RepositoryRoot)artifacts\apps</AppsArtifactDirectory>
       <SiteExtensionWorkingDirectory>$(TestDotNetPath)extension\</SiteExtensionWorkingDirectory>
-      <SiteExtensionOutputDirectory>$(RepositoryRoot)artifacts\extensions</SiteExtensionOutputDirectory>
+      <SiteExtensionOutputDirectory>$(RepositoryRoot)artifacts\build</SiteExtensionOutputDirectory>
       <TestProjectDirectory>$(RepositoryRoot)\test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests\</TestProjectDirectory>
       <SiteExtensionFeed Condition="$(SiteExtensionFeed) == ''">https://dotnet.myget.org/F/aspnetcore-ci-dev/</SiteExtensionFeed>
       <DotnetChannel>master</DotnetChannel>
       <DotnetVersion>coherent</DotnetVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <SiteExtensions Include="AspNetCoreTestBundle">
-      <Project>$(RepositoryRoot)src\Microsoft.AspNetCore.AzureAppServices.TestBundle\Microsoft.AspNetCore.AzureAppServices.TestBundle.csproj</Project>
-    </SiteExtensions>
-    <SiteExtensions Include="AspNetCoreRuntime">
-      <Project>$(RepositoryRoot)src\Microsoft.AspNetCore.Runtime.SiteExtension\Microsoft.AspNetCore.Runtime.SiteExtension.csproj</Project>
-    </SiteExtensions>
-  </ItemGroup>
 
   <Target Name="_AddTestRuntimes">
     <ItemGroup>
@@ -37,7 +28,12 @@
 
     <ItemGroup>
       <DotNetCoreSdk Include="$(_SdkVersion)" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
-      <DotNetCoreRuntime Include="$(MicrosoftNETCoreApp21PackageVersion)" InstallDir="$(SiteExtensionWorkingDirectory)" Arch="x86" />
+      <DotNetCoreRuntime
+        Include="$(MicrosoftNETCoreApp21PackageVersion)"
+        InstallDir="$(SiteExtensionWorkingDirectory)"
+        Arch="x86"
+        Feed="$(DotNetAssetRootUrl)"
+        FeedCredential="$(DotNetAssetRootAccessTokenSuffix)" />
     </ItemGroup>
   </Target>
 
