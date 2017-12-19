@@ -53,7 +53,7 @@
       <DotNetCacheArchiveItems Include="$(DotNetCacheArchives)" />
 
       <_CleanupFiles
-        Include="$(SiteExtensionWorkingDirectory)\additionalDeps;$(SiteExtensionWorkingDirectory)\store" />
+        Include="$(SiteExtensionWorkingDirectory)additionalDeps;$(SiteExtensionWorkingDirectory)store" />
 
       <_CleanupFiles
         Include="$([System.IO.Directory]::GetDirectories('$(SiteExtensionWorkingDirectory)shared\Microsoft.NETCore.App\'))"
@@ -78,22 +78,9 @@
     <UnzipArchive File="%(RuntimeArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)" Condition="'$(RuntimeArchives)' != ''" Overwrite="true" />
     <UnzipArchive File="%(DotNetCacheArchiveItems.Identity)" Destination="$(SiteExtensionWorkingDirectory)DotNetCache" Condition="'$(DotNetCacheArchives)' != ''" Overwrite="true" />
 
-    <MSBuild Projects="%(SiteExtensions.Project)"
+    <MSBuild Projects="%(SiteExtensions.Idenity)"
       Targets="Restore;Pack"
       Properties="DotnetHomeDirectory=$(SiteExtensionWorkingDirectory);BuildNumber=$(BuildNumber);PackageOutputPath=$(SiteExtensionOutputDirectory)" />
-
-  </Target>
-
-  <Target Name="PushSiteExtension">
-    <ItemGroup>
-      <RepositoryNupkgs Include="$(SiteExtensionOutputDirectory)\%(SiteExtensions.Identity).*.nupkg" />
-    </ItemGroup>
-
-    <PushNuGetPackages
-      Packages="@(RepositoryNupkgs)"
-      Feed="$(SiteExtensionFeed)"
-      ApiKey="$(APIKey)"
-      TimeoutSeconds="600"/>
 
   </Target>
 
