@@ -84,6 +84,19 @@
 
   </Target>
 
+  <Target Name="PushSiteExtension">
+    <ItemGroup>
+      <RepositoryNupkgs Include="$(SiteExtensionOutputDirectory)\%(SiteExtensions.PackageName).*.nupkg" />
+    </ItemGroup>
+
+    <PushNuGetPackages
+      Packages="@(RepositoryNupkgs)"
+      Feed="$(SiteExtensionFeed)"
+      ApiKey="$(APIKey)"
+      TimeoutSeconds="600"/>
+
+  </Target>
+
   <Target Name="TestSiteExtension" DependsOnTargets="_AddTestRuntimes;InstallDotNet;Restore">
 
     <Copy SourceFiles="$(TestProjectDirectory)NuGet.config.template" DestinationFiles="$(RepositoryRoot)artifacts\NuGet.config" />
