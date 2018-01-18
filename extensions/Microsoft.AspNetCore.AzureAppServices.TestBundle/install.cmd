@@ -2,7 +2,7 @@ SET DOTNET=D:\Program Files (x86)\dotnet
 SET DOTNETCACHE=D:\DotNetCache
 SET RUNTIMES=%DOTNET%\shared\Microsoft.NETCore.App
 
-for /R %x in (*.nupkg_) do ren "%x" *.nupkg
+for /R %%x in (*.nupkg_) do ren "%%x" "*.nupkg"
 
 robocopy "%DOTNET%" "." /E /XC /XN /XO /NFL /NDL ^
     /XD "%DOTNET%\sdk" ^
