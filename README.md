@@ -9,17 +9,17 @@ This project is part of ASP.NET Core. You can find samples, documentation and ge
 SiteExtensions
 ===
 
-To install ASP.NET Core runtime site extension:
-
+To install a nightly preview of the ASP.NET Core runtime site extension for testing purposes:
+1. In the Azure portal select App Services -> your site -> Application settings
 1. Set `SCM_SITEEXTENSIONS_FEED_URL` application setting to `https://dotnet.myget.org/F/aspnetcore-release/`
-2. Go to `Advanced Tools` -> `Site extensions` -> `Gallery`
-3. Enter `AspNetCoreRuntime` into `Search` box and click `Search`
-4. Click `+` to install site extension, click `Restart site` on the right side of the page when installation finishes.
-5. Restart site in `Overview` tab of `App service`
+1. Go to `Advanced Tools` -> `Site extensions` -> `Gallery`
+1. Enter `AspNetCoreRuntime` into `Search` box and click `Search`
+1. Click `+` to install site extension, click `Restart site` on the right side of the page when installation finishes.
+1. Restart site in `Overview` tab of `App service`
 
 
 To update ASP.NET Core runtime site extension:
-1. Go to `Advanced Tools` -> `Process Explorer`
-2. Kill `dotnet.exe` process
-3. Go to `Site extensions`
-4. Click update on site extension
+1. Stop site in `Overview` tab of `App service`
+1. Go to `Advanced Tools` -> `Site extensions`
+1. Click update on site extension
+1. Start site in `Overview` tab of `App service`
