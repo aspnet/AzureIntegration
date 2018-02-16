@@ -3,23 +3,8 @@
   <PropertyGroup>
     <Title>ASP.NET Core Runtime Extensions</Title>
     <Description>This site extension installs Microsoft.AspNetCore.All, Microsoft.AspNetCore.App and Microsoft.NetCore.App shared runtimes.</Description>
-    <TargetFramework>net461</TargetFramework>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageTags>aspnetcore;AzureSiteExtension</PackageTags>
-    <PackageType>AzureSiteExtension</PackageType>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <IncludeSymbols>false</IncludeSymbols>
-    <IncludeSource>false</IncludeSource>
-    <ContentTargetFolders>content</ContentTargetFolders>
     <PackageId>AspNetCoreRuntime</PackageId>
-    <!-- These need to be set manually because this is not marked as a shipping (to nuget.org) package. https://github.com/aspnet/AzureIntegration/issues/38 -->
-    <PackageLicenseUrl>https://raw.githubusercontent.com/aspnet/Home/2.0.0/LICENSE.txt</PackageLicenseUrl>
-    <PackageIconUrl>https://go.microsoft.com/fwlink/?LinkID=288859</PackageIconUrl>
-    <PackageProjectUrl>https://asp.net</PackageProjectUrl>
-    <Authors>Microsoft</Authors>
-    <Company>Microsoft Corporation.</Company>
-    <Copyright>Copyright © Microsoft Corporation</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
