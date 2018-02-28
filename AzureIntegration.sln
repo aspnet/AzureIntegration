@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationInsights.HostingStartup.Tests", "test\ApplicationInsights.HostingStartup.Tests\ApplicationInsights.HostingStartup.Tests.csproj", "{0899A101-E451-40A4-81B0-7AA18202C25D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureKeyVault.HostingStartup", "src\Microsoft.AspNetCore.AzureKeyVault.HostingStartup\Microsoft.AspNetCore.AzureKeyVault.HostingStartup.csproj", "{72D32515-3890-4915-A0DC-604764E57739}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72D32515-3890-4915-A0DC-604764E57739}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72D32515-3890-4915-A0DC-604764E57739}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72D32515-3890-4915-A0DC-604764E57739}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72D32515-3890-4915-A0DC-604764E57739}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,5 +102,9 @@ Global
 		{9B22E525-FEC9-4C7C-9F9C-598C15BD0250} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
 		{1CE2D76B-39E6-46C0-8F6F-C63E370955A9} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
 		{0899A101-E451-40A4-81B0-7AA18202C25D} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
+		{72D32515-3890-4915-A0DC-604764E57739} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8653743-3615-45B0-99E0-61D68EE3A547}
 	EndGlobalSection
 EndGlobal

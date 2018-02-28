@@ -10,7 +10,10 @@
     <MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>0.4.1-rtm-105</MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>
     <MicrosoftAspNetCoreServerKestrelPackageVersion>2.0.1-rtm-105</MicrosoftAspNetCoreServerKestrelPackageVersion>
     <MicrosoftAspNetCoreTestHostPackageVersion>2.0.1-rtm-105</MicrosoftAspNetCoreTestHostPackageVersion>
+    <MicrosoftAzureServicesAppAuthenticationPackageVersion>1.1.0-preview</MicrosoftAzureServicesAppAuthenticationPackageVersion>
+    <MicrosoftExtensionsConfigurationAzureKeyVaultPackageVersion>2.0.0</MicrosoftExtensionsConfigurationAzureKeyVaultPackageVersion>
     <MicrosoftExtensionsConfigurationCommandLinePackageVersion>2.0.0</MicrosoftExtensionsConfigurationCommandLinePackageVersion>
+    <MicrosoftExtensionsConfigurationEnvironmentVariablesPackageVersion>2.0.0</MicrosoftExtensionsConfigurationEnvironmentVariablesPackageVersion>
     <MicrosoftExtensionsConfigurationJsonPackageVersion>2.0.0</MicrosoftExtensionsConfigurationJsonPackageVersion>
     <MicrosoftExtensionsDiagnosticAdapterPackageVersion>2.0.0</MicrosoftExtensionsDiagnosticAdapterPackageVersion>
     <MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>2.0.0</MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>
