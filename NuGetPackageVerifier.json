@@ -4,7 +4,14 @@
             "AdxVerificationCompositeRule"
         ],
         "packages": {
-          "Microsoft.AspNetCore.AzureAppServicesIntegration": { }
+          "Microsoft.AspNetCore.AzureAppServicesIntegration": { },
+          "Microsoft.AspNetCore.AzureKeyVault.HostingStartup": {
+            "Exclusions": {
+              "BUILD_ITEMS_FRAMEWORK": {
+                "*": "Purposefully creating an 'Any' build item so our targets can be injected for desktop and non-desktop based projects."
+              }
+            }
+          }
         }
     },
     "Default": { // Rules to run for packages not listed in any other set.
