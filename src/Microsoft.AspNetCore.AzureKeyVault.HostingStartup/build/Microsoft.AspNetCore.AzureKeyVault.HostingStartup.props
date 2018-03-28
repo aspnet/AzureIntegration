@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <Compile Update="@(Compile)">
+      <Visible Condition="'%(NuGetPackageId)' == 'Microsoft.AspNetCore.AzureKeyVault.HostingStartup'">false</Visible>
+    </Compile>
+  </ItemGroup>
+</Project>
