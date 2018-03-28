@@ -17,4 +17,9 @@
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="$(MicrosoftAzureServicesAppAuthenticationPackageVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="contentFiles\**\*" Pack="true" PackagePath="contentFiles" BuildAction="Compile" />
+    <Content Include="build\**\*" Pack="true" PackagePath="build" />
+  </ItemGroup>
+
 </Project>
