@@ -1,4 +1,6 @@
 <Project>
+  <Import Project="dependencies.props" />
+
   <PropertyGroup>
     <FunctionalTestsProject>$(RepositoryRoot)test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests\Microsoft.AspNetCore.AzureAppServices.FunctionalTests.csproj</FunctionalTestsProject>
 
