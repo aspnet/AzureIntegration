@@ -1,5 +1,4 @@
 <Project>
-  <Import Project="$(RepositoryRoot)\build\dependencies.props" />
   <Import Project="PackSiteExtension.targets" />
 
   <PropertyGroup>

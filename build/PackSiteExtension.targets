@@ -3,15 +3,25 @@
     <PackageDependsOn>$(PackageDependsOn);PackSiteExtensionFiles</PackageDependsOn>
     <MSBuildProjectFiles>$(MSBuildProjectFiles);$(MSBuildThisFileFullPath)</MSBuildProjectFiles>
 
-    <SiteExtensionOobArchive>$(BuildDir)aspnetcore-site-extension-internal-$(PackageVersion).zip</SiteExtensionOobArchive>
+    <SiteExtensionOobArchive>$(BuildDir)runtime-site-extension-internal-$(PackageVersion).zip</SiteExtensionOobArchive>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ArtifactInfo Include="$(SiteExtensionOobArchive)">
+      <ArtifactType>ZipArchive</ArtifactType>
+      <RepositoryRoot>$(RepositoryRoot)</RepositoryRoot>
+      <Category>shipoob</Category>
+    </ArtifactInfo>
+    <FilesToSign Include="$(SiteExtensionOobArchive)" IsContainer="true" />
+    <FilesToSign Include="content/Microsoft.Web.Xdt.Extensions.dll" Container="$(SiteExtensionOobArchive)" Certificate="$(AssemblySigningCertName)" />
+  </ItemGroup>
 
   <Target Name="PackSiteExtensionFiles"
     DependsOnTargets="Compile;_CollectSiteExtensionFiles"
     Inputs="@(SiteExtensionFile);$(MSBuildProjectFiles)"
     Outputs="$(SiteExtensionOobArchive)">
 
-    <ZipArchive 
+    <ZipArchive
       SourceFiles="@(SiteExtensionFile)"
       WorkingDirectory="$(SiteExtBasePath)"
       File="$(SiteExtensionOobArchive)"
