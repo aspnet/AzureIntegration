@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\SiteExtensions.props" />
+
   <PropertyGroup>
     <Title>ASP.NET Core Extensions</Title>
     <Description>This extension enables additional functionality for ASP.NET Core on Azure WebSites, such as enabling Azure logging.</Description>
     <TargetFramework>net461</TargetFramework>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <PackageTags>aspnet;logging;aspnetcore;AzureSiteExtension;keyvault;configuration;dataprotection</PackageTags>
-    <PackageType>AzureSiteExtension</PackageType>
-    <ContentTargetFolders>content</ContentTargetFolders>
     <HostingStartupRuntimeFrameworkVersion>$(MicrosoftNETCoreApp21PackageVersion)</HostingStartupRuntimeFrameworkVersion>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <IncludeSymbols>false</IncludeSymbols>
-    <IncludeSource>false</IncludeSource>
+    <PackageTags>aspnet;logging;aspnetcore;AzureSiteExtension;keyvault;configuration;dataprotection</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
