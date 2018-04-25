@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(MicrosoftAspNetCoreHostingAbstractionsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="$(MicrosoftExtensionsConfigurationAzureKeyVaultPackageVersion)" />
-    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="$(MicrosoftAzureServicesAppAuthenticationPackageVersion)" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="$(MicrosoftAzureServicesAppAuthenticationPackageVersion)" PrivateAssets="Analyzers" />
   </ItemGroup>
 
   <ItemGroup>
