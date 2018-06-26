@@ -13,6 +13,7 @@
     <MicrosoftAspNetCoreHostingAbstractionsPackageVersion>2.2.0-preview1-34530</MicrosoftAspNetCoreHostingAbstractionsPackageVersion>
     <MicrosoftAspNetCoreHostingPackageVersion>2.2.0-preview1-34530</MicrosoftAspNetCoreHostingPackageVersion>
     <MicrosoftAspNetCoreMvcPackageVersion>2.2.0-preview1-34530</MicrosoftAspNetCoreMvcPackageVersion>
+    <MicrosoftAspNetCoreAspNetCoreModuleV2PackageVersion>2.2.0-preview1-t000</MicrosoftAspNetCoreAspNetCoreModuleV2PackageVersion>
     <MicrosoftAspNetCoreRazorRuntimePackageVersion>2.2.0-preview1-34530</MicrosoftAspNetCoreRazorRuntimePackageVersion>
     <MicrosoftAspNetCoreServerIISIntegrationPackageVersion>2.2.0-preview1-34530</MicrosoftAspNetCoreServerIISIntegrationPackageVersion>
     <MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>0.6.0-preview1-34530</MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>
