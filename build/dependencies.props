@@ -29,6 +29,7 @@
     <MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsLoggingAzureAppServicesPackageVersion>
     <MicrosoftExtensionsLoggingConfigurationPackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsLoggingConfigurationPackageVersion>
     <MicrosoftExtensionsLoggingConsolePackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsLoggingConsolePackageVersion>
+    <MicrosoftExtensionsLoggingEventSourcePackageVersion>2.2.0-preview2-35202</MicrosoftExtensionsLoggingEventSourcePackageVersion>
     <MicrosoftExtensionsLoggingPackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsLoggingPackageVersion>
     <MicrosoftExtensionsLoggingTestingPackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsLoggingTestingPackageVersion>
     <MicrosoftExtensionsProcessSourcesPackageVersion>2.2.0-preview3-35202</MicrosoftExtensionsProcessSourcesPackageVersion>
