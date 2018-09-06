@@ -22,14 +22,16 @@ namespace Microsoft.AspNetCore.Hosting
             }
             hostBuilder.ConfigureLogging(builder => builder
                 .AddAzureWebAppDiagnostics()
-                .AddEventSourceLogger());
+                .AddEventSourceLogger()
+            );
             hostBuilder.ConfigureServices(collection => collection.Configure<LoggerFilterOptions>(
-                options => {
+                options =>
+                {
                     // Enable event source logger provide for all categories at Information level
                     options.Rules.Add(new LoggerFilterRule(
                         providerName: "Microsoft.Extensions.Logging.EventSource.EventSourceLoggerProvider",
                         categoryName: null,
-                        logLevel: LogLevel.Information, 
+                        logLevel: LogLevel.Information,
                         filter: null));
                 }));
             return hostBuilder;
