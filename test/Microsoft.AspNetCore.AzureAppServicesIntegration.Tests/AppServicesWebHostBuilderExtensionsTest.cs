@@ -29,7 +29,6 @@ namespace Microsoft.AspNetCore.Hosting.Azure.AppServices.Tests
             mock.Verify(builder => builder.ConfigureServices(It.IsNotNull<Action<IServiceCollection>>()), Times.AtLeastOnce);
         }
 
-        
         [Fact]
         public async Task UseAzureAppServices_RegistersEventSourceLogger()
         {
@@ -48,9 +47,9 @@ namespace Microsoft.AspNetCore.Hosting.Azure.AppServices.Tests
             }
 
             var events = listener.EventData.ToArray();
-            Assert.Contains(events, args => 
+            Assert.Contains(events, args =>
                 args.EventSource.Name == "Microsoft-Extensions-Logging" &&
-                args.Payload.Contains("Request starting HTTP/2.0 GET http://localhost/  "));
+                args.Payload.OfType<string>().Any(p => p.Contains("Request starting")));
         }
 
         private class TestEventListener : EventListener
