@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Hosting
@@ -19,9 +20,20 @@ namespace Microsoft.AspNetCore.Hosting
             {
                 throw new ArgumentNullException(nameof(hostBuilder));
             }
-#pragma warning disable 618
-            hostBuilder.ConfigureLogging(builder => builder.AddAzureWebAppDiagnostics());
-#pragma warning restore 618
+            hostBuilder.ConfigureLogging(builder => builder
+                .AddAzureWebAppDiagnostics()
+                .AddEventSourceLogger()
+            );
+            hostBuilder.ConfigureServices(collection => collection.Configure<LoggerFilterOptions>(
+                options =>
+                {
+                    // Enable event source logger provide for all categories at Information level
+                    options.Rules.Add(new LoggerFilterRule(
+                        providerName: "Microsoft.Extensions.Logging.EventSource.EventSourceLoggerProvider",
+                        categoryName: null,
+                        logLevel: LogLevel.Information,
+                        filter: null));
+                }));
             return hostBuilder;
         }
     }
