@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27016.1
 MinimumVisualStudioVersion = 15.0.26730.03
@@ -41,8 +41,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureAppServices.SiteExtension", "extensions\Microsoft.AspNetCore.AzureAppServices.SiteExtension\Microsoft.AspNetCore.AzureAppServices.SiteExtension.csproj", "{1CE2D76B-39E6-46C0-8F6F-C63E370955A9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationInsights.HostingStartup.Tests", "test\ApplicationInsights.HostingStartup.Tests\ApplicationInsights.HostingStartup.Tests.csproj", "{0899A101-E451-40A4-81B0-7AA18202C25D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.AzureAppServices.FunctionalTests", "test\Microsoft.AspNetCore.AzureAppServices.FunctionalTests\Microsoft.AspNetCore.AzureAppServices.FunctionalTests.csproj", "{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Web.Xdt.Extensions.Tests", "test\Microsoft.Web.Xdt.Extensions.Tests\Microsoft.Web.Xdt.Extensions.Tests.csproj", "{809AEE05-1B28-4E31-8959-776B249BD725}"
 EndProject
@@ -98,10 +96,6 @@ Global
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0899A101-E451-40A4-81B0-7AA18202C25D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{809AEE05-1B28-4E31-8959-776B249BD725}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -133,7 +127,6 @@ Global
 		{9B22E525-FEC9-4C7C-9F9C-598C15BD0250} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
 		{1CE2D76B-39E6-46C0-8F6F-C63E370955A9} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
 		{0899A101-E451-40A4-81B0-7AA18202C25D} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
-		{2B2C37FF-9249-4EA4-9A7F-038B55A15C2C} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
 		{809AEE05-1B28-4E31-8959-776B249BD725} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
 		{F0CABFE8-A5B1-487B-A451-A486D26742D3} = {FF9B744E-6C59-40CC-9E41-9D2EBD292435}
 		{15664836-2B94-4D2D-AC18-6DED01FCCCBD} = {CD650B4B-81C2-4A44-AEF2-A251A877C1F0}
