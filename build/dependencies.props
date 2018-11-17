@@ -5,7 +5,6 @@
   <PropertyGroup Label="Package Versions">
     <InternalAspNetCoreSdkPackageVersion>3.0.0-build-20181114.5</InternalAspNetCoreSdkPackageVersion>
     <InternalAspNetCoreSiteExtensionSdkPackageVersion>3.0.0-build-20181114.5</InternalAspNetCoreSiteExtensionSdkPackageVersion>
-    <MicrosoftApplicationInsightsAspNetCorePackageVersion>2.1.1</MicrosoftApplicationInsightsAspNetCorePackageVersion>
     <MicrosoftAspNetCoreAspNetCoreModulePackageVersion>3.0.0-alpha1-10742</MicrosoftAspNetCoreAspNetCoreModulePackageVersion>
     <MicrosoftAspNetCoreAspNetCoreModuleV2PackageVersion>3.0.0-alpha1-10742</MicrosoftAspNetCoreAspNetCoreModuleV2PackageVersion>
     <MicrosoftAspNetCoreAzureAppServicesHostingStartupPackageVersion>3.0.0-alpha1-10742</MicrosoftAspNetCoreAzureAppServicesHostingStartupPackageVersion>
